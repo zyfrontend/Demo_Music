@@ -1,20 +1,21 @@
 <template>
   <div class="recommend">
     <banner class="banner" :bannerData="bannerData"></banner>
-    <div>
-      <h3>推荐歌单<i class="iconfont icon-arrow-right-bold"></i></h3>
-      <recommend-list :musicList="musicList"></recommend-list>
+    <h3>推荐歌单<i class="iconfont icon-arrow-right-bold"></i></h3>
+    <div class="recommend-list">
+      <music-card v-for="item in musicList" :key="item.id" :itemData="item"></music-card>
     </div>
   </div>
 </template>
 
 <script>
 import Banner from '@/components/banner'
-import RecommendList from './components/recommendList.vue'
+import MusicCard from '@/components/music-card'
+
 export default {
   components: {
     Banner,
-    RecommendList
+    MusicCard
   },
   data() {
     return {
@@ -47,6 +48,11 @@ export default {
 .recommend {
   .banner {
     margin: 0 auto;
+  }
+  .recommend-list {
+    display: flex;
+  flex-wrap: wrap;
+  margin: 10px 0;
   }
 }
 </style>

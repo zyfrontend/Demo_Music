@@ -12,7 +12,9 @@
       @clickSortBoxItem="clickSortBoxItem"
     ></musiclist-menu>
     <!-- 列表 -->
-    <music-card :listCardData="musicList.playlists" @clickListCardItem="clickListCardItem"></music-card>
+    <div class="list-card">
+      <music-card :listCardData="musicList.playlists" @clickListCardItem="clickListCardItem"></music-card>
+    </div>
     <!-- 换页 -->
     <div class="page" v-if="musicList.playlists">
       <el-pagination
@@ -136,6 +138,11 @@ export default {
     width: 100%;
     text-align: center;
     padding-bottom: 20px;
+  }
+  .list-card {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0;
   }
 }
 </style>

@@ -1,7 +1,7 @@
 <template>
   <div class="musiclist-card">
-    <div class="list-card" v-for="item in listCardData" :key="item.id">
-      <music-card class="card" :itemData="item"></music-card>
+    <div class="list-card" >
+      <music-card v-for="item in listCardData" :key="item.id" class="card" :itemData="item"></music-card>
     </div>
   </div>
 </template>
@@ -34,17 +34,10 @@ export default {
 </script>
 <style lang="less" scoped>
 .musiclist-card {
-  display: flex;
-  flex-wrap: wrap;
-  margin: 10px 0;
   .list-card {
-    width: 18.4%;
-    margin: 0 2% 20px 0;
-    overflow: hidden;
-    cursor: pointer;
-    &:nth-child(5n) {
-      margin-right: 0;
-    }
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0;
   }
 }
 </style>

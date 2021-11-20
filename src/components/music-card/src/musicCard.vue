@@ -2,7 +2,7 @@
   <div class="music-card">
     <div class="card-img">
       <!-- img -->
-      <img :src="(itemData.picUrl || itemData.coverImgUrl) + '?param=400y400'" alt="" />
+      <img :src="(itemData.picUrl || itemData.coverImgUrl || itemData.img1v1Url) + '?param=400y400'" alt="" />
     </div>
     <div class="card-name">
       <!-- title -->
@@ -23,6 +23,13 @@ export default {
 </script>
 <style lang="less" scoped>
 .music-card {
+  width: 18.4%;
+  margin: 0 2% 20px 0;
+  overflow: hidden;
+  cursor: pointer;
+  &:nth-child(5n) {
+      margin-right: 0;
+    }
   .card-img {
     width: 100%;
     padding-bottom: 100%;

@@ -38,7 +38,7 @@ export default {
   height: 100%;
 }
 .discover-view {
-  padding: 0 250px;
+  padding: 0 auto;
   overflow: scroll;
   height: calc(100vh - 220px);
 }
