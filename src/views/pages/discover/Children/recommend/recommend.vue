@@ -3,7 +3,7 @@
     <banner class="banner" :bannerData="bannerData"></banner>
     <h3>推荐歌单<i class="iconfont icon-arrow-right-bold"></i></h3>
     <div class="recommend-list">
-      <music-card v-for="item in musicList" :key="item.id" :itemData="item"></music-card>
+      <music-card @clickMusicCardItem="clickMusicCardItem" v-for="item in musicList" :key="item.id" :itemData="item"></music-card>
     </div>
   </div>
 </template>
@@ -36,6 +36,11 @@ export default {
         // console.log(res.data.result);
         this.musicList = res.data.result
       })
+    },
+    // 监听 musiccard中点击回传id
+    clickMusicCardItem(id) {
+      // console.log(id)
+      this.$router.push({ name: "musicListDetail", params: { id } });
     }
   },
   created() {
@@ -51,8 +56,8 @@ export default {
   }
   .recommend-list {
     display: flex;
-  flex-wrap: wrap;
-  margin: 10px 0;
+    flex-wrap: wrap;
+    margin: 10px 0;
   }
 }
 </style>

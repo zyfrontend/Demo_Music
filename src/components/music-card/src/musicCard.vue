@@ -1,5 +1,5 @@
 <template>
-  <div class="music-card">
+  <div class="music-card" @click="clickMusicCardItem(itemData.id)">
     <div class="card-img">
       <!-- img -->
       <img :src="(itemData.picUrl || itemData.coverImgUrl || itemData.img1v1Url) + '?param=400y400'" alt="" />
@@ -18,6 +18,13 @@ export default {
   },
   data() {
     return {}
+  },
+  methods: {
+    clickMusicCardItem(id) {
+      this.$emit("clickMusicCardItem", id);
+      // console.log(id);
+      
+    },
   }
 }
 </script>

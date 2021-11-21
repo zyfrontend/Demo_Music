@@ -43,7 +43,7 @@ export default {
   },
   created() {
     this.getSingerList()
-    console.log(this.singerList)
+    // console.log(this.singerList)
   }
 }
 </script>
