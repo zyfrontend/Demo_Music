@@ -24,10 +24,14 @@ export default {
   width: 100%;
   display: flex;
   align-items: center;
-  height: 10px;
+  height: 15px;
   margin-top: 12px;
   overflow: hidden;
-  font-size: 10px;
+  // font-size: 12px;
+  span {
+  font-size: 12px;
+
+  }
   .progressSlider {
     width: 300px;
     margin: 0 10px;

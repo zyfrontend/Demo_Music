@@ -14,7 +14,24 @@
     </div>
     <div class="bar-right">
       <!-- 音量 列表 -->
-      <control-list></control-list>
+      <div class="control-list">
+        <div class="volumeControl">
+          <i class="iconfont icon-yinliang"></i>
+          <el-slider class="volumeSlider" v-model="volume" :show-tooltip="false"></el-slider>
+        </div>
+        <div class="playList" @click="openDrawer">
+          <i class="iconfont icon-bofangliebiao"></i>
+        </div>
+        <!-- 列表 -->
+        <el-drawer title="我是标题" :visible.sync="drawer" :with-header="false" width="300">
+          <div class="drawerHeader">总 {{ musicList.length }} 首</div>
+          <el-table :data="musicList" stripe style="width: 100%" :show-header="false" @row-dblclick="clickRow" highlight-current-row lazy>
+            <el-table-column prop="name" width="150px"> </el-table-column>
+            <el-table-column prop="ar[0].name" width="80px"> </el-table-column>
+            <el-table-column prop="dt" width="70px"> </el-table-column>
+          </el-table>
+        </el-drawer>
+      </div>
     </div>
   </div>
 </template>
@@ -38,7 +55,12 @@ export default {
       // 记录当前音乐的index
       currentMusicIndex: '',
       // 播放模式 order random
-      playType: 'order'
+      playType: 'order',
+      volume: 30,
+      drawer: false,
+      currentMusicIndex: 0,
+      // 抽屉是否被打开过（如果没打开过，里面的数据是不会渲染的）
+      hasDrawerOpend: false,
     }
   },
   methods: {
@@ -117,6 +139,37 @@ export default {
       }
     },
 
+    openDrawer() {
+      this.drawer = !this.drawer
+      this.hasDrawerOpend = true;
+      this.handleDrawerListDOM(this.currentMusicIndex);
+      // console.log('open')
+    },
+    clickRow() {
+      // console.log('111')
+    },
+    // 操作drawerList中DOM的函数
+    handleDrawerListDOM(currentIndex, lastIndex) {
+      // 目前没什么好思路 直接操作原生DOM
+      this.$nextTick(() => {
+        let tableRows = document.querySelector('.bar-right').querySelectorAll('.el-table__row')
+
+        // // 直接修改dom样式的颜色无效  可能是因为第三方组件 style scoped的原因
+        // // 通过引入全局样式解决
+        // console.log(tableRows)
+
+        if (tableRows[currentIndex]) {
+          tableRows[currentIndex].children[0].querySelector('.cell').classList.add('currentRow')
+          tableRows[currentIndex].children[1].querySelector('.cell').classList.add('currentRow')
+        }
+        if ((lastIndex && lastIndex != -1 && tableRows[lastIndex]) || lastIndex == 0) {
+          // 将上一首的类名删掉
+          tableRows[lastIndex].children[0].querySelector('.cell').classList.remove('currentRow')
+          tableRows[lastIndex].children[1].querySelector('.cell').classList.remove('currentRow')
+        }
+      })
+    },
+
     // 自定义控件
     // 播放音乐的函数
     playMusic() {
@@ -151,6 +204,13 @@ export default {
         this.playMusic()
       } else {
         this.pauseMusic()
+      }
+    },
+    // 监听currentIndex的变化
+    '$store.state.currentIndex'(currentIndex, lastIndex) {
+      this.musicList = this.$store.state.musicList
+      if (this.hasDrawerOpend) {
+        this.handleDrawerListDOM(currentIndex, lastIndex)
       }
     }
   }
@@ -193,6 +253,25 @@ export default {
   .bar-right {
     width: 123px;
     position: relative;
+    .control-list {
+      display: flex;
+      align-items: center;
+      position: relative;
+      .volumeControl {
+        display: flex;
+        align-items: center;
+        margin-right: 15px;
+      }
+      .volumeSlider {
+        width: 55px;
+      }
+      .drawerHeader {
+        font-size: 12px;
+        transform: scale(0.9);
+        color: #aaa;
+        padding: 15px 0;
+      }
+    }
   }
 }
 </style>

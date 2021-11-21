@@ -107,7 +107,7 @@ tbody .el-table th, .el-table tr {
 } */
 
 .el-slider__button-wrapper {
-    top: -16px !important;
+    top: -8px !important;
 }
 
 .el-drawer__body {

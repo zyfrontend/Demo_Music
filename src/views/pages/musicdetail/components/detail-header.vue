@@ -23,7 +23,7 @@
       </div>
       <!-- btn -->
       <div class="buttons">
-        <div class="button-item play-all">
+        <div class="button-item play-all" @click="playAll">
           <i class="iconfont icon-bofang play-all"></i>
           <span>播放全部</span>
         </div>
@@ -75,6 +75,11 @@ export default {
       isSub: false,
       // 是否是用户创建的歌单
       isCreated: false
+    }
+  },
+  methods:{
+    playAll(){
+      this.$emit("playAll")
     }
   },
   filters: {

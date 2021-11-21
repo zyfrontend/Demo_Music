@@ -1,18 +1,20 @@
 <template>
   <div class="musicdetail">
-    <detail-header :headerData="musicListDetail"></detail-header>
+    <detail-header :headerData="musicListDetail" @playAll="playAll"></detail-header>
     <!-- 列表 -->
     <el-tabs v-model="activeName">
       <el-tab-pane label="歌曲列表" name="musiclist">
         <el-table
           @row-dblclick="clickRow"
-
           :data="musicListDetail.tracks"
           size="mini"
           style="width: 100%"
           highlight-current-row
           stripe
           lazy
+          :infinite-scroll-disabled="scrollLoadDisabled"
+          :infinite-scroll-distance="1500"
+          :infinite-scroll-immediate="false"
           :row-key="
             row => {
               return row.id
@@ -101,22 +103,82 @@ export default {
     async clickRow(row) {
       // console.log(row)
       // 将musicId提交到vuex中 供bottomControl查询歌曲url和其它操作
-      this.$store.commit("updateMusicId", row.id);
+      this.$store.commit('updateMusicId', row.id)
       // 如果歌单发生变化,则提交歌单到vuex
       if (this.musicListDetail.id != this.$store.state.musicListId) {
         // 将歌单传到vuex
-        this.$store.commit("updateMusicList", {
+        this.$store.commit('updateMusicList', {
           // 列表
           musicList: this.musicListDetail.tracks,
           // 列表id
-          musicListId: this.musicListDetail.id,
-        });
+          musicListId: this.musicListDetail.id
+        })
       }
-
     },
+
+    // 点击播放全部按钮的回调
+    playAll() {
+      this.$store.commit('updateMusicId', this.musicListDetail.tracks[0].id)
+      this.$store.commit('updateMusicList', {
+        musicList: this.musicListDetail.tracks,
+        musicListId: this.musicListDetail.id
+      })
+    },
+    // 高亮当前播放
+    handleDOM(current, last) {
+      // console.log(current, last)
+      if (document.querySelector('.musicdetail')) {
+        let tableRows = document.querySelector('.musicdetail').querySelectorAll('.el-table__row')
+        // console.log(tableRows)
+        // 在musiclist 中查找当前正在播放的歌曲index
+        let index = this.musicListDetail.tracks.findIndex(
+          (item) => item.id == current
+        );
+        // console.log(index)
+        if (index != -1) {
+          // 直接修改dom样式的颜色无效  可能是因为第三方组件的原故
+          // 通过引入全局样式解决
+          // 将正在播放的音乐前面的索引换成小喇叭
+          tableRows[index].children[0].querySelector(
+            ".cell"
+          ).innerHTML = `<div><i class="iconfont icon-yinliang"></i></div>`;
+          tableRows[index].children[0]
+            .querySelector(".iconfont")
+            .classList.add("currentRow");
+          tableRows[index].children[2]
+            .querySelector(".cell")
+            .classList.add("currentRow");
+        }
+
+        // 清除上一首的样式
+        if (last != -1) {
+          let lastIndex = this.musicListDetail.tracks.findIndex(
+            (item) => item.id == last
+          );
+          if (lastIndex != -1) {
+            // 将上一个播放的dom的小喇叭换回索引
+            tableRows[lastIndex].children[0].querySelector(
+              ".cell"
+            ).innerHTML = `<div>${
+              lastIndex + 1 < 10 ? "0" + (lastIndex + 1) : lastIndex + 1
+            }</div>`;
+
+            // 将上一首的类名删掉  小喇叭的html已经被替换了，不需要再还原
+            tableRows[lastIndex].children[2]
+              .querySelector(".cell")
+              .classList.remove("currentRow");
+          }
+        }
+      }
+    }
   },
   async created() {
     await this.getMusicListDetail()
+  },
+  watch: {
+    '$store.state.musicId'(current, last) {
+      this.handleDOM(current, last)
+    }
   }
 }
 </script>
