@@ -1,9 +1,8 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     // 音乐的url
     musicId: '',
@@ -12,15 +11,18 @@ export default new Vuex.Store({
     // 当前正在播放的歌单id
     musicListId: '',
     // 当前播放音乐索引
-    currentIndex: '',
+    currentIndex: 0,
     // 播放状态
-    isPlay: false
+    isPlay: false,
+    // 歌曲时长
+    duration: ''
   },
   mutations: {
     // 歌单双击的歌曲ID
     updateMusicId(state, musicId) {
       state.musicId = musicId
       // console.log('updateMusicId', musicId)
+      // localCache.setCache('musicId', musicId)
     },
     // 更新歌单列表和歌单id
     updateMusicList(state, payload) {
@@ -34,14 +36,30 @@ export default new Vuex.Store({
       // 歌单是固定的死数据，而vuex中的musicList是动态的
       let musicList = payload.musicList.slice(0)
       state.musicList = musicList
+
       // console.log('updateMusicList');
     },
     // 当前播放音乐的索引
     updateCurrentIndex(state, index) {
       state.currentIndex = index
+
       // console.log(state.currentIndex);
+    },
+    // 当前播放时间位置
+    updateCurrentTime(state, time) {
+      // window.localStorage.setItem('duration', JSON.stringify(time))
+
+      state.duration = time
+    },
+
+    // 修改播放状态
+    changePlayState(state, isPlay) {
+      state.isPlay = isPlay
+      // console.log('changePlayState');
     }
   },
   actions: {},
   modules: {}
 })
+
+export default store

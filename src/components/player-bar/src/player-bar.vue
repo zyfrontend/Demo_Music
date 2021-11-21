@@ -1,6 +1,6 @@
 <template>
   <div class="player-bar">
-    <audio :src="musicUrl" autoplay ref="audioPlayer" @ended="switchMusic('next')"></audio>
+    <audio :src="musicUrl" autoplay ref="audioPlayer" @play="changeState(true)" @pause="changeState(false)" @ended="switchMusic('next')" @timeupdate="timeupdate"></audio>
     <div class="bar-left">
       <!-- img -->
       <div class="avatar">
@@ -10,7 +10,26 @@
     </div>
     <div class="bar-center">
       <!-- 控件 -->
-      <player-control @switchMusic="switchMusic"></player-control>
+      <div class="player-control">
+        <!-- 按钮 -->
+        <div class="control-btn">
+          <span><i class="iconfont icon-xunhuan" v-if="true"></i><i class="iconfont icon-suiji1" v-else></i></span>
+          <span><i class="iconfont icon-shangyishou" @click="switchMusic('pre')"></i></span>
+          <span @click="musicList.length != 0 ? changePlayState() : ''">
+            <i class="iconfont icon-icon_play" v-if="!this.$store.state.isPlay"></i>
+            <i class="iconfont icon-zantingtingzhi" v-else></i>
+          </span>
+          <span><i class="iconfont icon-xiayishou" @click="switchMusic('next')"></i></span>
+          <span><i class="iconfont icon-xihuan"></i></span>
+        </div>
+        <!-- 时间进度条 -->
+        <div class="control-progress">
+          <span class="currentTime">{{ currentTime | handleMusicTime }}</span>
+          <!-- :value 是单向的  要实现双向要v-model -->
+          <el-slider class="progressSlider" v-model="timeProgress" :show-tooltip="false" @change="changeProgress"></el-slider>
+          <span class="totalTime">{{ duration }}</span>
+        </div>
+      </div>
     </div>
     <div class="bar-right">
       <!-- 音量 列表 -->
@@ -37,11 +56,13 @@
 </template>
 
 <script>
-import PlayerControl from './player-control.vue'
+import { returnSecond, handleMusicTime } from '@/utils'
 import ControlList from './control-list.vue'
+let lastSecond = 0
+// 总时长的秒数
+let durationNum = 0
 export default {
   components: {
-    PlayerControl,
     ControlList
   },
   data() {
@@ -61,6 +82,12 @@ export default {
       currentMusicIndex: 0,
       // 抽屉是否被打开过（如果没打开过，里面的数据是不会渲染的）
       hasDrawerOpend: false,
+      // 歌曲总时长
+      duration: '00:00',
+      // 当前播放时间位置
+      currentTime: 0,
+      // 进度条的位置
+      timeProgress: 0
     }
   },
   methods: {
@@ -68,6 +95,11 @@ export default {
     async getMusicUrl(id) {
       let result = await this.$request('/song/url', { id })
       // 将URl传入组件
+      if (result.data.data[0].url == null) {
+        this.$message.error("该歌曲暂无版权，将为您播放下一首歌曲");
+        this.switchMusic("next");
+        return;
+      }
       this.musicUrl = result.data.data[0].url
       // console.log(result.data);
     },
@@ -83,6 +115,8 @@ export default {
         this.$store.commit('updateCurrentIndex', index)
         this.musicDetail = this.musicList[index]
         // console.log(this.musicDetail)
+        this.duration = this.musicList[index].dt
+        // console.log(this.duration)
       }
     },
     // 歌曲切换
@@ -138,17 +172,56 @@ export default {
           return null
       }
     },
-
+    // 播放列表
     openDrawer() {
       this.drawer = !this.drawer
-      this.hasDrawerOpend = true;
-      this.handleDrawerListDOM(this.currentMusicIndex);
+      this.hasDrawerOpend = true
+      this.handleDrawerListDOM(this.currentMusicIndex)
       // console.log('open')
+    },
+    // 当前播放的时间
+    timeupdate() {
+      // console.log(e);
+      // console.log(this.$refs.audioPlayer.currentTime);
+      // 节流
+      let time = this.$refs.audioPlayer.currentTime
+      // 将当前播放时间保存到vuex  如果保存到vuex这步节流,会导致歌词不精准,误差最大有1s
+      this.$store.commit('updateCurrentTime', time)
+
+      time = Math.floor(time)
+      // console.log(timer)
+      if (time !== lastSecond) {
+        // console.log(time)
+        lastSecond = time
+        this.currentTime = time
+        // console.log(this.currentTime)
+        // 计算进度条的位置
+        this.timeProgress = Math.floor((time / durationNum) * 100)
+
+        // console.log((timer / durationNum) * 100);
+      }
+    },
+    // 拖动进度条
+    // 拖动进度条的回调
+    changeProgress(e) {
+      // 修改当前播放时间
+      this.currentTime = Math.floor((e / 100) * durationNum)
+      // 改变audio的实际当前播放时间
+      this.$refs.audioPlayer.currentTime = this.currentTime
     },
     clickRow() {
       // console.log('111')
     },
-    // 操作drawerList中DOM的函数
+
+    // 点击播放键的回调
+     changePlayState() {
+      !this.$store.state.isPlay ? this.playMusic() : this.pauseMusic();
+    },
+// audio开始或暂停播放的回调  在vuex中改变状态
+    changeState(state) {
+      this.$store.commit("changePlayState", state);
+    },
+    // 操作drawerList中DOM的函数， 添加当前正在播放歌曲高亮样式
     handleDrawerListDOM(currentIndex, lastIndex) {
       // 目前没什么好思路 直接操作原生DOM
       this.$nextTick(() => {
@@ -192,6 +265,8 @@ export default {
       this.musicList = this.$store.state.musicList
       // 获取当前音乐详情
       this.getMusicDetailFromMusicList()
+      //
+      durationNum = returnSecond(this.duration)
     },
     // 监听 currentIndex 变化
     '$store.state.currentIndex'(currentIndex, lastIndex) {
@@ -199,11 +274,11 @@ export default {
       // lastIndex 之前的 index
     },
     // 监听播放状态
-    '$store.state.isPlay'(isPlay) {
+    "$store.state.isPlay"(isPlay) {
       if (isPlay) {
-        this.playMusic()
+        this.playMusic();
       } else {
-        this.pauseMusic()
+        this.pauseMusic();
       }
     },
     // 监听currentIndex的变化
@@ -213,6 +288,9 @@ export default {
         this.handleDrawerListDOM(currentIndex, lastIndex)
       }
     }
+  },
+  filters: {
+    handleMusicTime
   }
 }
 </script>
@@ -249,6 +327,56 @@ export default {
     flex: 1;
     display: flex;
     justify-content: center;
+    .player-control {
+      margin-top: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 320px;
+      span {
+        display: inline-block;
+        width: 50px;
+        box-sizing: border-box;
+        text-align: center;
+      }
+      .control-btn {
+        display: flex;
+        align-items: center;
+        width: 100%;
+        padding: 0 60px;
+        justify-content: space-between;
+        height: 13px;
+        i {
+          font-size: 20px;
+          color: #313131;
+        }
+        span:nth-child(3) i {
+          font-size: 25px;
+        }
+        .icon-xunhuan {
+          font-size: 17px;
+        }
+        .icon-xihuan {
+          font-size: 15px;
+        }
+      }
+      .control-progress {
+        width: 100%;
+        display: flex;
+        align-items: center;
+        height: 15px;
+        margin-top: 12px;
+        overflow: hidden;
+        // font-size: 12px;
+        span {
+          font-size: 12px;
+        }
+        .progressSlider {
+          width: 300px;
+          margin: 0 10px;
+        }
+      }
+    }
   }
   .bar-right {
     width: 123px;

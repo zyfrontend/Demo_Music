@@ -160,7 +160,7 @@ export default {
             tableRows[lastIndex].children[0].querySelector(
               ".cell"
             ).innerHTML = `<div>${
-              lastIndex + 1 < 10 ? "0" + (lastIndex + 1) : lastIndex + 1
+              lastIndex + 1 < 10 ?  (lastIndex + 1) : lastIndex + 1
             }</div>`;
 
             // 将上一首的类名删掉  小喇叭的html已经被替换了，不需要再还原
