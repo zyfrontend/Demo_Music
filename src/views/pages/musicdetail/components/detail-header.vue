@@ -42,7 +42,7 @@
         <div class="tag-item" v-for="(item, index) in headerData.tags" :key="index">
           {{ item }}
         </div>
-        <div v-if="headerData.tags.length == 0">暂无标签</div>
+        <div v-if="(headerData.tags && headerData.tags.length) == 0">暂无标签</div>
       </div>
       <!-- 歌曲数量 播放数量 -->
       <div class="other-info">

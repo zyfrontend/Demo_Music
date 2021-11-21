@@ -7,16 +7,21 @@ export default new Vuex.Store({
   state: {
     // 音乐的url
     musicId: '',
-    // 音乐的播放状态
-    isPlay: false,
     // 当前播放的歌单
     musicList: [],
-    // 当前播放歌单的id
+    // 当前正在播放的歌单id
     musicListId: '',
-    // 当前播放音乐的索引
-    currentIndex: -1
+    // 当前播放音乐索引
+    currentIndex: '',
+    // 播放状态
+    isPlay: false
   },
   mutations: {
+    // 歌单双击的歌曲ID
+    updateMusicId(state, musicId) {
+      state.musicId = musicId
+      // console.log('updateMusicId', musicId)
+    },
     // 更新歌单列表和歌单id
     updateMusicList(state, payload) {
       // 当歌单id发生变化时,重置当前播放音乐索引
@@ -30,6 +35,11 @@ export default new Vuex.Store({
       let musicList = payload.musicList.slice(0)
       state.musicList = musicList
       // console.log('updateMusicList');
+    },
+    // 当前播放音乐的索引
+    updateCurrentIndex(state, index) {
+      state.currentIndex = index
+      // console.log(state.currentIndex);
     }
   },
   actions: {},

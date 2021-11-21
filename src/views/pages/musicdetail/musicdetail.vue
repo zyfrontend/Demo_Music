@@ -6,6 +6,7 @@
       <el-tab-pane label="歌曲列表" name="musiclist">
         <el-table
           @row-dblclick="clickRow"
+
           :data="musicListDetail.tracks"
           size="mini"
           style="width: 100%"
@@ -105,15 +106,14 @@ export default {
       if (this.musicListDetail.id != this.$store.state.musicListId) {
         // 将歌单传到vuex
         this.$store.commit("updateMusicList", {
+          // 列表
           musicList: this.musicListDetail.tracks,
+          // 列表id
           musicListId: this.musicListDetail.id,
         });
       }
 
-      // let result = await this.$request("/song/url", { id: row.id, br: 320000 });
-      // console.log(result.data.data[0].url);
-      // this.$store.commit("updateMusicUrl", result.data.data[0].url);
-    }
+    },
   },
   async created() {
     await this.getMusicListDetail()
