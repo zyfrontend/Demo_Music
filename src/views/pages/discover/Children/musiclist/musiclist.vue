@@ -13,7 +13,8 @@
     ></musiclist-menu>
     <!-- 列表 -->
     <div class="list-card">
-      <music-card :listCardData="musicList.playlists" @clickListCardItem="clickListCardItem"></music-card>
+      <!-- <music-card :listCardData="musicList.playlists" ></music-card> -->
+      <music-card v-for="item in (musicList.playlists)" @clickMusicCardItem="clickMusicCardItem" :key="item.id" class="card" :itemData="item">1</music-card>
     </div>
     <!-- 换页 -->
     <div class="page" v-if="musicList.playlists">
@@ -34,7 +35,7 @@
 <script>
 import MusiclistFirst from './components/musiclistFirst.vue'
 import MusiclistMenu from './components/musiclistMenu.vue'
-import MusicCard from './components/musiclistCard.vue'
+import MusicCard from '@/components/music-card'
 export default {
   components: {
     MusiclistFirst,
@@ -114,7 +115,7 @@ export default {
       this.getMusicList()
     },
     // 点击歌单的回调
-    clickListCardItem(id) {
+    clickMusicCardItem(id) {
       console.log(id)
       this.$router.push({ name: 'musicListDetail', params: { id } })
     },

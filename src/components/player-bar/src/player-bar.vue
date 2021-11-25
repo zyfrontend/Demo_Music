@@ -1,11 +1,23 @@
 <template>
   <div class="player-bar">
-    <audio :src="musicUrl" autoplay ref="audioPlayer" @play="changeState(true)" @pause="changeState(false)" @ended="switchMusic('next')" @timeupdate="timeupdate"></audio>
+    <audio
+      :src="musicUrl"
+      autoplay
+      ref="audioPlayer"
+      @play="changeState(true)"
+      @pause="changeState(false)"
+      @ended="switchMusic('next')"
+      @timeupdate="timeupdate"
+    ></audio>
     <div class="bar-left">
       <!-- img -->
-      <div class="avatar">
+      <div class="avatar" @click="$store.commit('changeMusicDetailCardState')">
         <img :src="musicDetail.al.picUrl" alt="" v-if="musicDetail.al" />
-        <img src="../../../assets/img/test.jpg" alt="" />
+        <img src="../../../assets/img/test.jpg" alt="" v-else />
+      </div>
+      <div class="music-info" v-if="musicDetail && musicDetail.name">
+        <div class="music-name">{{ musicDetail.name }}</div>
+        <div class="music-author">{{ musicDetail.ar[0].name }}</div>
       </div>
     </div>
     <div class="bar-center">
@@ -13,20 +25,28 @@
       <div class="player-control">
         <!-- 按钮 -->
         <div class="control-btn">
-          <span><i class="iconfont icon-xunhuan" v-if="true"></i><i class="iconfont icon-suiji1" v-else></i></span>
+          <span @click="playType = playType == 'order' ? 'random' : 'order'"
+            ><i class="iconfont icon-xunhuan" v-if="playType === 'order'"></i><i class="iconfont icon-suiji1" v-else></i
+          ></span>
           <span><i class="iconfont icon-shangyishou" @click="switchMusic('pre')"></i></span>
           <span @click="musicList.length != 0 ? changePlayState() : ''">
             <i class="iconfont icon-icon_play" v-if="!this.$store.state.isPlay"></i>
             <i class="iconfont icon-zantingtingzhi" v-else></i>
           </span>
           <span><i class="iconfont icon-xiayishou" @click="switchMusic('next')"></i></span>
-          <span><i class="iconfont icon-xihuan"></i></span>
+          <span @click="$warn()"><i class="iconfont icon-xihuan"></i></span>
         </div>
         <!-- 时间进度条 -->
         <div class="control-progress">
           <span class="currentTime">{{ currentTime | handleMusicTime }}</span>
           <!-- :value 是单向的  要实现双向要v-model -->
-          <el-slider class="progressSlider" v-model="timeProgress" :show-tooltip="false" @change="changeProgress"></el-slider>
+          <el-slider
+            class="progressSlider"
+            v-model="timeProgress"
+            :disabled="musicList.length == 0"
+            :show-tooltip="false"
+            @change="changeProgress"
+          ></el-slider>
           <span class="totalTime">{{ duration }}</span>
         </div>
       </div>
@@ -87,7 +107,10 @@ export default {
       // 当前播放时间位置
       currentTime: 0,
       // 进度条的位置
-      timeProgress: 0
+      timeProgress: 0,
+      // 播放模式（顺序播放，随机播放）
+      // order random
+      playType: 'order'
     }
   },
   methods: {
@@ -96,9 +119,9 @@ export default {
       let result = await this.$request('/song/url', { id })
       // 将URl传入组件
       if (result.data.data[0].url == null) {
-        this.$message.error("该歌曲暂无版权，将为您播放下一首歌曲");
-        this.switchMusic("next");
-        return;
+        this.$message.error('该歌曲暂无版权，将为您播放下一首歌曲')
+        this.switchMusic('next')
+        return
       }
       this.musicUrl = result.data.data[0].url
       // console.log(result.data);
@@ -117,6 +140,7 @@ export default {
         // console.log(this.musicDetail)
         this.duration = this.musicList[index].dt
         // console.log(this.duration)
+        // console.log(this.duration)
       }
     },
     // 歌曲切换
@@ -128,9 +152,12 @@ export default {
         case 'pre':
           currentMusicIndex = this.currentMusicIndex
           let preIndex
+          // 判断播放状态--循环列表
           if (this.playType == 'order') {
+            // 获取待播放歌曲索引值
             preIndex = currentMusicIndex - 1 < 0 ? this.musicList.length - 1 : currentMusicIndex - 1
             // console.log(preIndex);
+            // 判断播放状态--随机列表
           } else if (this.playType == 'random') {
             if (this.musicList.length == 1) {
               preIndex = currentMusicIndex
@@ -185,9 +212,10 @@ export default {
       // console.log(this.$refs.audioPlayer.currentTime);
       // 节流
       let time = this.$refs.audioPlayer.currentTime
+      // console.log(time)
       // 将当前播放时间保存到vuex  如果保存到vuex这步节流,会导致歌词不精准,误差最大有1s
-      this.$store.commit('updateCurrentTime', time)
-
+      // this.$store.commit('updateCurrentTime', time)
+      // console.log(time)
       time = Math.floor(time)
       // console.log(timer)
       if (time !== lastSecond) {
@@ -197,6 +225,7 @@ export default {
         // console.log(this.currentTime)
         // 计算进度条的位置
         this.timeProgress = Math.floor((time / durationNum) * 100)
+        this.$store.commit('updateCurrentTime', time)
 
         // console.log((timer / durationNum) * 100);
       }
@@ -214,12 +243,12 @@ export default {
     },
 
     // 点击播放键的回调
-     changePlayState() {
-      !this.$store.state.isPlay ? this.playMusic() : this.pauseMusic();
+    changePlayState() {
+      !this.$store.state.isPlay ? this.playMusic() : this.pauseMusic()
     },
-// audio开始或暂停播放的回调  在vuex中改变状态
+    // audio开始或暂停播放的回调  在vuex中改变状态
     changeState(state) {
-      this.$store.commit("changePlayState", state);
+      this.$store.commit('changePlayState', state)
     },
     // 操作drawerList中DOM的函数， 添加当前正在播放歌曲高亮样式
     handleDrawerListDOM(currentIndex, lastIndex) {
@@ -274,11 +303,11 @@ export default {
       // lastIndex 之前的 index
     },
     // 监听播放状态
-    "$store.state.isPlay"(isPlay) {
+    '$store.state.isPlay'(isPlay) {
       if (isPlay) {
-        this.playMusic();
+        this.playMusic()
       } else {
-        this.pauseMusic();
+        this.pauseMusic()
       }
     },
     // 监听currentIndex的变化
@@ -310,7 +339,9 @@ export default {
   .bar-left {
     display: flex;
     align-items: center;
-    width: 123px;
+    width: 223px;
+    // background: red;
+    overflow: hidden;
     .avatar {
       width: 40px;
       height: 40px;
@@ -320,7 +351,27 @@ export default {
       cursor: pointer;
     }
     .avatar img {
-      width: 100%;
+      width: 40px;
+      height: 40px;
+    }
+    .music-info {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      .music-name {
+        cursor: pointer;
+      }
+      .music-author {
+        cursor: pointer;
+        font-size: 10px;
+        margin-top: 5px;
+        &:hover {
+          text-decoration: underline;
+        }
+
+        // color: red;
+      }
     }
   }
   .bar-center {

@@ -25,7 +25,7 @@ export default {
   methods: {
     // 事件函数
     handleIndex(index) {
-      console.log(index);
+      // console.log(index);
       index += 1
       if (index < 10) {
         return '0' + index

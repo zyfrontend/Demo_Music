@@ -5,13 +5,13 @@
     </div>
     <div class="list">
       <table>
-        <tr class="listRows" v-for="(item, index) in officialItem.tracks.slice(0, 5)" :key="item.id">
+        <tr class="listRows" v-for="(item, index) in officialItem.tracks.slice(0, 5)" :key="item.id" @click="handleTrClick(officialItem.id || item.id, index)">
           <td class="index">{{ index + 1 }}</td>
           <td class="musicName">{{ item.name }}</td>
           <td class="singer">{{ item.ar[0].name }}</td>
         </tr>
       </table>
-      <div class="checkAll">查看全部 <i class="iconfont icon-arrow-right-bold"></i></div>
+      <div class="checkAll" @click="$warn()">查看全部 <i class="iconfont icon-arrow-right-bold"></i></div>
     </div>
   </div>
 </template>
@@ -29,10 +29,13 @@ export default {
   data() {
     return {}
   },
-  methods: {},
-  async created() {
-    await console.log(this.officialItem)
-  }
+  methods: {
+    handleTrClick(id, index){
+      
+      this.$emit('handleTrClick', {id, index})
+    }
+  },
+  
 }
 </script>
 <style lang="less" scoped>

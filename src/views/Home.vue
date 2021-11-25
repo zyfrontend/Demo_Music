@@ -14,6 +14,7 @@
         </el-main>
       </el-container>
     </el-container>
+    <music-detail></music-detail>
     <player-bar class="player-bar-z"></player-bar>
   </div>
 </template>
@@ -22,12 +23,14 @@
 import HeaderBar from '@/components/header-bar'
 import NavMenu from '@/components/nav-menu'
 import PlayerBar from '@/components/player-bar'
+import MusicDetail from '@/components/music-detail'
 export default {
   name: 'Home',
   components: {
     HeaderBar,
     NavMenu,
-    PlayerBar
+    PlayerBar,
+    MusicDetail
   }
 }
 </script>

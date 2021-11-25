@@ -12,7 +12,6 @@
           highlight-current-row
           stripe
           lazy
-          :infinite-scroll-disabled="scrollLoadDisabled"
           :infinite-scroll-distance="1500"
           :infinite-scroll-immediate="false"
           :row-key="
@@ -47,29 +46,7 @@ export default {
       activeName: 'musiclist',
       musicListDetail: {},
       comments: {},
-      // 当前评论页数
-      currentCommentPage: 1,
-      // 是否还有更多音乐
-      isMore: false,
-      // 用户是否收藏了当前歌单
-      isSub: false,
-      // 是否是用户创建的歌单
-      isCreated: false,
-      // 评论是否在加载
-      isCommentLoading: false,
-      // 是否禁止滚动加载
-      scrollLoadDisabled: false,
-      // 收藏者列表的变量
-      followedsListData: {
-        // 当前页数
-        currentPage: 1,
-        // 列表
-        followedsList: [],
-        // 是否还有更多
-        isMore: false,
-        // 是否已经加载过列表数据 （用于点击收藏者tab后第一次加载数据）
-        isLoaded: false
-      }
+      
     }
   },
   components: {

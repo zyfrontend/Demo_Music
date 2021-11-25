@@ -1,4 +1,18 @@
 import { formatDate, formatMonthDay, formatMinuteSecond, formatYearMonthDay, handleMusicTime } from './formatDate'
 import { getCount } from './getCount'
 import { returnSecond } from './returnSecond'
-export { formatDate, formatMonthDay, formatMinuteSecond, formatYearMonthDay, getCount, returnSecond, handleMusicTime }
+import { globalClick } from './error'
+import { parseLyric } from './parseLyric'
+import { scrollTo } from './scrollTo'
+export {
+  formatDate,
+  formatMonthDay,
+  formatMinuteSecond,
+  formatYearMonthDay,
+  getCount,
+  returnSecond,
+  handleMusicTime,
+  globalClick,
+  parseLyric,
+  scrollTo
+}

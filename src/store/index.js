@@ -15,7 +15,9 @@ const store = new Vuex.Store({
     // 播放状态
     isPlay: false,
     // 歌曲时长
-    duration: ''
+    duration: '',
+    // 音乐详情卡片的显隐
+    isMusicDetailCardShow: false
   },
   mutations: {
     // 歌单双击的歌曲ID
@@ -56,6 +58,10 @@ const store = new Vuex.Store({
     changePlayState(state, isPlay) {
       state.isPlay = isPlay
       // console.log('changePlayState');
+    },
+    // 切换音乐详情卡片的显隐
+    changeMusicDetailCardState(state) {
+      state.isMusicDetailCardShow = !state.isMusicDetailCardShow
     }
   },
   actions: {},

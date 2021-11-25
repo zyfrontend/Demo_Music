@@ -1,6 +1,6 @@
 <template>
-  <div class="Video">
-      <h2>Video</h2>
+  <div class="Daily">
+      <h2>开发中</h2>
   </div>
 </template>
 
@@ -14,5 +14,5 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.Video {}
+.Daily {}
 </style>

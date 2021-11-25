@@ -27,11 +27,11 @@
           <i class="iconfont icon-bofang play-all"></i>
           <span>播放全部</span>
         </div>
-        <div class="button-item" v-if="!isCreated">
+        <div class="button-item" v-if="!isCreated" @click="$warn()">
           <i class="iconfont icon-xihuan" :class="isSub ? 'red' : ''"></i>
           <span>{{ isSub ? '已收藏' : '收藏' }}</span>
         </div>
-        <div class="button-item">
+        <div class="button-item" @click="$warn()">
           <i class="iconfont icon-zhuanfa"></i>
           <span>分享</span>
         </div>

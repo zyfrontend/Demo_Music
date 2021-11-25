@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import {handleMusicTime} from '@/utils'
+import { handleMusicTime } from '@/utils'
 
 export default {
   props: {
@@ -44,22 +44,21 @@ export default {
       // console.log(type)
       this.$emit('switchMusic', type)
     },
-    changeProgress(e){
-      console.log(e);
+    changeProgress(e) {
+      console.log(e)
       // 修改当前播放时间
-      // this.currentTime = Math.floor((e / 100) * durationNum);
+      this.currentTime = Math.floor((e / 100) * durationNum);
       // 改变audio的实际当前播放时间
-      // this.$refs.audioPlayer.currentTime = this.currentTime;
+      this.$refs.audioPlayer.currentTime = this.currentTime;
       this.$emit('changeProgress', this.atimeProgress)
     }
-
   },
-  watch:{
-    'timeProgress'(timeProgress){
+  watch: {
+    timeProgress(timeProgress) {
       this.atimeProgress = timeProgress
     }
   },
-  filters:{
+  filters: {
     handleMusicTime
   }
 }

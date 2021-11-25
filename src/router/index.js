@@ -42,9 +42,17 @@ const routes = [
         component: () => import('@/views/pages/video/Video.vue')
       },
       {
+        path: '/favorites',
+        component: () => import('@/views/pages/collect/Collect.vue')
+      },
+      {
+        path: '/recommendmusic',
+        component: () => import('@/views/pages/daily/Daily.vue')
+      },
+      {
         path: '/musiclistdetail/:id',
         name: 'musicListDetail',
-        component: () => import('@/views/pages/musicdetail/musicdetail.vue')
+        component: () => import('@/views/pages/listdetail/listdetail.vue')
       }
     ]
   }

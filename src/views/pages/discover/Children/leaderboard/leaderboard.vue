@@ -4,15 +4,14 @@
       <div class="title">官方榜</div>
       <!--  -->
       <div v-for="item in officialListDetail" :key="item.id">
-        <list-table :officialItem="item"></list-table>
+        <list-table @handleTrClick="handleTrClick" :officialItem="item"></list-table>
       </div>
 
-      <list-table> </list-table>
     </div>
     <div class="worldwide">
       <div class="title">全球榜</div>
       <div class="worldwide-card">
-        <music-card v-for="item in globalList" :key="item.id" :itemData="item"></music-card>
+        <music-card @clickMusicCardItem="clickMusicCardItem" v-for="item in globalList" :key="item.id" :itemData="item"></music-card>
       </div>
     </div>
   </div>
@@ -21,6 +20,7 @@
 <script>
 import ListTable from '@/components/list-table'
 import MusicCard from '@/components/music-card/src/musicCard.vue'
+import { formatMinuteSecond } from '@/utils/formatDate.js'
 
 export default {
   components: {
@@ -34,7 +34,8 @@ export default {
       // 歌单列表等信息
       officialListDetail: [],
       // 全球榜
-      globalList: []
+      globalList: [],
+      
     }
   },
   methods: {
@@ -53,11 +54,39 @@ export default {
       let result = await this.$request('/playlist/detail', { id })
       // console.log(result)
       result = result.data.playlist
+      // console.log(result)
       // 对时间进行处理
-      // result.tracks.forEach((item, index) => {
-      //   result.tracks[index].dt = handleMusicTime(item.dt)
-      // })
+      result.tracks.forEach((item, index) => {
+        result.tracks[index].dt = formatMinuteSecond(item.dt)
+      })
       this.officialListDetail.push(result)
+    },
+    // 监听 musiccard中点击回传id
+    clickMusicCardItem(id) {
+      // console.log(id)
+      this.$router.push({ name: "musicListDetail", params: { id } });
+    },
+    handleTrClick({id, index}){
+      // console.log(id)
+      // 查询歌单id
+      let musicListIndex = this.officialListDetail.findIndex(
+        (item) => item.id == id
+      );
+      // 获取对应歌单
+      // console.log(this.officialListDetail[musicListIndex], index)
+      this.$store.commit(
+        "updateMusicId",
+        this.officialListDetail[musicListIndex].tracks[index].id
+      );
+      // console.log(this.officialListDetail[musicListIndex])
+      // 如果歌单发生变化,则提交歌单到vuex
+      if (id != this.$store.state.musicListId) {
+        // 将歌单传到vuex
+        this.$store.commit("updateMusicList", {
+          musicList: this.officialListDetail[musicListIndex].tracks,
+          musicListId: id,
+        });
+      }
     }
   },
   async created() {
