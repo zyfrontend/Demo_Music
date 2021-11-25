@@ -13,6 +13,7 @@ import './assets/css/reset.less'
 import { request } from './service/request'
 
 Vue.prototype.$request = request
+
 Vue.prototype.$warn = function () {
   this.$message.error('功能还在开发中。。。')
 }

@@ -5,7 +5,7 @@
     <musiclist-menu
       :currentTag="currentTag"
       :sortList="sortList"
-      @getSortList="getSortList"
+      @getSortList="$store.dispatch('discover/getSortList')"
       @clickSecondBarItem="clickSecondBarItem"
       :SecondNavBarData="hotTags"
       :itemWidth="0"
@@ -14,7 +14,9 @@
     <!-- 列表 -->
     <div class="list-card">
       <!-- <music-card :listCardData="musicList.playlists" ></music-card> -->
-      <music-card v-for="item in (musicList.playlists)" @clickMusicCardItem="clickMusicCardItem" :key="item.id" class="card" :itemData="item">1</music-card>
+      <music-card v-for="item in musicList.playlists" @clickMusicCardItem="clickMusicCardItem" :key="item.id" class="card" :itemData="item"
+        >1</music-card
+      >
     </div>
     <!-- 换页 -->
     <div class="page" v-if="musicList.playlists">
@@ -33,6 +35,8 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 import MusiclistFirst from './components/musiclistFirst.vue'
 import MusiclistMenu from './components/musiclistMenu.vue'
 import MusicCard from '@/components/music-card'
@@ -43,93 +47,57 @@ export default {
     MusicCard
   },
   data() {
-    return {
-      theFirstOfHighquality: {},
-      hotTags: [],
-      musicList: {},
-      currentTag: {},
-      currentPage: 1,
-      // 分类数据
-      sortList: []
-    }
+    return {}
   },
   methods: {
-    // 处理请求事件
-    // 获取高质量歌单的第一条数据
-    async getTheFirstOfHighquality() {
-      let result = await this.$request('/top/playlist/highquality', {
-        limit: 1
-      })
-      //   console.log(result);
-      this.theFirstOfHighquality = result.data.playlists[0]
-      //   console.log(this.theFirstOfHighquality);
-    },
-    // 获取热门歌单tag数据
-    async getHotTag() {
-      let result = await this.$request('/playlist/hot')
-      // console.log(result);
-      this.currentTag = result.data.tags[0]
-      this.hotTags = result.data.tags
-    },
-    // 根据歌名请求歌单列表
-    async getMusicList() {
-      this.musicList = {}
-      let result = await this.$request('/top/playlist', {
-        cat: this.currentTag.name,
-        offset: 50 * (this.currentPage - 1)
-      })
-      // console.log(result);
-      // 里面的total可以用于分页，所以把整个对象都保存下来
-      this.musicList = result.data
-    },
-
-    // 获取歌单分类数据
-    // 子组件 emit 事件
-    async getSortList() {
-      let res = await this.$request('/playlist/catlist')
-      // console.log(res);
-      this.sortList = res.data.sub
-    },
-
-    // 获取歌单分类数据
-    async getSortList() {
-      let res = await this.$request('/playlist/catlist')
-      // console.log(res);
-      this.sortList = res.data.sub
-    },
-
     // 处理点击事件
     // 接收点击二级navbar的回调
     clickSecondBarItem(index) {
-      // console.log(this.hotTags[index].name);
-      this.currentTag = this.hotTags[index]
-      this.currentPage = 1
-      // 先清空musicList
-      this.getMusicList()
+      this.$store.commit('discover/changeCurrentTag', this.$store.state.discover.hotTags[index])
+      this.$store.commit('discover/changeCurrentPage', 1)
+      this.$store.dispatch('discover/getMusicList')
+    },
+    // 点击sortBoxItem中的回调
+    clickSortBoxItem(item) {
+      this.$store.commit('discover/changeCurrentTag', item)
+      this.$store.commit('discover/changeCurrentPage', 1)
+      this.$store.dispatch('discover/getMusicList')
     },
     //当页数发生改变时
     pageChange(page) {
-      // page是当前页数
-      // console.log(e);
-      this.currentPage = page
-      this.getMusicList()
+      this.$store.commit('discover/changeCurrentPage', page)
+      this.$store.dispatch('discover/getMusicList')
     },
     // 点击歌单的回调
     clickMusicCardItem(id) {
       console.log(id)
-      this.$router.push({ name: 'musicListDetail', params: { id } })
-    },
-    // 点击sortBoxItem中的回调
-    clickSortBoxItem(item) {
-      this.currentTag = item
-      this.currentPage = 1
-      this.getMusicList()
+      // this.$router.push({ name: 'musicListDetail', params: { id } })
     }
   },
-  async created() {
-    this.getTheFirstOfHighquality()
-    await this.getHotTag()
-    this.getMusicList()
+  computed: {
+    ...mapState('discover', {
+      theFirstOfHighquality: state => state.theFirstOfHighquality
+    }),
+    ...mapState('discover', {
+      hotTags: state => state.hotTags
+    }),
+    ...mapState('discover', {
+      sortList: state => state.sortList
+    }),
+    ...mapState('discover', {
+      musicList: state => state.musicList
+    }),
+    ...mapState('discover', {
+      currentPage: state => state.currentPage
+    }),
+    ...mapState('discover', {
+      currentTag: state => state.currentTag
+    })
+  },
+  created() {
+    this.$store.dispatch('discover/getTheFirstOfHighquality')
+    this.$store.dispatch('discover/getHotTag')
+    this.$store.dispatch('discover/getMusicList')
   }
 }
 </script>
