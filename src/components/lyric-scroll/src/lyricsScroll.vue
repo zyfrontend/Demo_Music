@@ -1,8 +1,8 @@
 <template>
-  <div class="lyricsScroll" ref="lyrecsRef">
+  <div class="lyricsScroll" ref="lyricsRef">
     <div class="placeholder"></div>
     <div class="lyricsItem" v-for="(item, index) in lyric" :key="index" :class="lyricsIndex === index ? 'active' : ''">
-      {{ item[1] }}
+      {{ item.content }}
     </div>
     <!-- 占位 -->
     <div class="placeholder"></div>
@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import { scrollTo } from '@/utils'
 export default {
   props: {
     lyric: {
@@ -19,19 +20,32 @@ export default {
   },
   data() {
     return {
+      // 当前播放到的歌词
       lyricsIndex: 0
     }
   },
   methods: {
-    
+    scrollLyrics() {
+      if (this.lyricsIndex > 0 && this.lyricsIndex < 3) return
+      scrollTo(this.$refs.lyricsRef, (this.lyricsIndex - 2) * 50, 300)
+    }
   },
+  computed: {},
   watch: {
-    
-    // 监听vuex中的musicId 重置歌词索引
-    '$store.state.musicId'(musicId) {
-      this.lyricsIndex = 0
-    },
-   
+    '$store.state.player.currentTime'(currentTime) {
+      const data = this.$props.lyric
+
+      // 获取当前播放到的歌词索引
+      for (let i = 0; i < data.length; i++) {
+        if (currentTime < data[i].time / 1000) {
+          this.lyricsIndex = i - 1
+          break
+        }
+      }
+
+      // 歌词滚动
+      this.scrollLyrics()
+    }
   }
 }
 </script>
@@ -47,10 +61,7 @@ export default {
     display: none;
   }
   .active {
-    // color: white;
-    font-size: 1.2rem;
-    scroll-margin-top: 2rem;
-    // background: red;
+    font-size: 1.2rem !important;
   }
   .lyrics::-webkit-scrollbar {
     display: none;

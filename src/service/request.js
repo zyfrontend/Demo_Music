@@ -23,18 +23,7 @@ export function request(url, params) {
     instance.interceptors.response.use(config => {
         return config;
     }, err => {
-        console.log([err]);
-        if (err.response.data.msg == '需要登录') {
-            // cookie过期 退出登录
-            // console.log(window.localStorage.getItem("userInfo"));
-            // window.localStorage.setItem("userInfo", "");
-            // 刷新页面
-            // history.go(0)
-            // 修改当前的登录状态
-            vuex.state.isLogin = false;
-        } else {
-            console.log(err.response.data.msg);
-        }
+      console.log([err])
     });
 
     instance.defaults.withCredentials = true;

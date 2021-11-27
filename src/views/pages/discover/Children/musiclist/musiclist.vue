@@ -70,8 +70,8 @@ export default {
     },
     // 点击歌单的回调
     clickMusicCardItem(id) {
-      console.log(id)
-      // this.$router.push({ name: 'musicListDetail', params: { id } })
+      
+      this.$router.push({ name: 'musicListDetail', params: { id } })
     }
   },
   computed: {

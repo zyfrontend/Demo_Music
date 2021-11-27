@@ -181,7 +181,7 @@ export default {
         }
       }
       .play-all {
-        background-color: #ec4141;
+        background-color: #8e44ad;
         color: white;
       }
     }

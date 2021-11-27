@@ -11,7 +11,7 @@
     ></audio>
     <div class="bar-left">
       <!-- img -->
-      <div class="avatar" @click="$store.commit('changeMusicDetailCardState')">
+      <div class="avatar" @click="$store.commit('player/changeMusicDetailCardState')">
         <img :src="musicDetail.al.picUrl" alt="" v-if="musicDetail.al" />
         <img src="../../../assets/img/test.jpg" alt="" v-else />
       </div>
@@ -30,7 +30,7 @@
           ></span>
           <span><i class="iconfont icon-shangyishou" @click="switchMusic('pre')"></i></span>
           <span @click="musicList.length != 0 ? changePlayState() : ''">
-            <i class="iconfont icon-icon_play" v-if="!this.$store.state.isPlay"></i>
+            <i class="iconfont icon-icon_play" v-if="!isPlay"></i>
             <i class="iconfont icon-zantingtingzhi" v-else></i>
           </span>
           <span><i class="iconfont icon-xiayishou" @click="switchMusic('next')"></i></span>
@@ -43,9 +43,9 @@
           <el-slider
             class="progressSlider"
             v-model="timeProgress"
-            :disabled="musicList.length == 0"
             :show-tooltip="false"
             @change="changeProgress"
+            :disabled="musicList.length == 0"
           ></el-slider>
           <span class="totalTime">{{ duration }}</span>
         </div>
@@ -55,8 +55,8 @@
       <!-- 音量 列表 -->
       <div class="control-list">
         <div class="volumeControl">
-          <i class="iconfont icon-yinliang"></i>
-          <el-slider class="volumeSlider" v-model="volume" :show-tooltip="false"></el-slider>
+          <i class="iconfont icon-yinliang" @click="changeMutedState"></i>
+          <el-slider class="volumeSlider" @input="changeVolume" v-model="volume" :show-tooltip="false"></el-slider>
         </div>
         <div class="playList" @click="openDrawer">
           <i class="iconfont icon-bofangliebiao"></i>
@@ -76,81 +76,51 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import { returnSecond, handleMusicTime } from '@/utils'
 import ControlList from './control-list.vue'
 let lastSecond = 0
-// 总时长的秒数
 let durationNum = 0
+// 保存当前音量
+let volumeSave = 0;
 export default {
   components: {
     ControlList
   },
   data() {
     return {
-      // 音乐url
-      musicUrl: '',
-      // 歌单列表
+      // 歌曲列表
       musicList: [],
-      // 音乐详情
-      musicDetail: {},
       // 记录当前音乐的index
       currentMusicIndex: '',
       // 播放模式 order random
       playType: 'order',
-      volume: 30,
       drawer: false,
       currentMusicIndex: 0,
       // 抽屉是否被打开过（如果没打开过，里面的数据是不会渲染的）
       hasDrawerOpend: false,
-      // 歌曲总时长
-      duration: '00:00',
       // 当前播放时间位置
       currentTime: 0,
       // 进度条的位置
       timeProgress: 0,
       // 播放模式（顺序播放，随机播放）
       // order random
-      playType: 'order'
+      playType: 'order',
+      // 音量
+      volume: 30,
+      // 是否静音
+      isMuted: false,
     }
   },
   methods: {
-    // 获取歌曲URL
-    async getMusicUrl(id) {
-      let result = await this.$request('/song/url', { id })
-      // 将URl传入组件
-      if (result.data.data[0].url == null) {
-        this.$message.error('该歌曲暂无版权，将为您播放下一首歌曲')
-        this.switchMusic('next')
-        return
-      }
-      this.musicUrl = result.data.data[0].url
-      // console.log(result.data);
-    },
-    // 获取音乐详情
-    // 根据id找到 musicList中对应的musicDetail
-    getMusicDetailFromMusicList() {
-      let index = this.musicList.findIndex(item => item.id == this.$store.state.musicId)
-      // console.log(index)
-      if (index != -1) {
-        // 记录当前音乐的index
-        this.currentMusicIndex = index
-        // 将索引传至vuex
-        this.$store.commit('updateCurrentIndex', index)
-        this.musicDetail = this.musicList[index]
-        // console.log(this.musicDetail)
-        this.duration = this.musicList[index].dt
-        // console.log(this.duration)
-        // console.log(this.duration)
-      }
-    },
     // 歌曲切换
     switchMusic(type, id) {
       // console.log('Switch', type)
-      let currentMusicIndex = this.currentMusicIndex
+      let currentMusicIndex = this.$store.state.player.currentMusicIndex
       switch (type) {
         // 上一首
         case 'pre':
-          currentMusicIndex = this.currentMusicIndex
+          currentMusicIndex = this.$store.state.player.currentMusicIndex
           let preIndex
           // 判断播放状态--循环列表
           if (this.playType == 'order') {
@@ -169,13 +139,18 @@ export default {
               }
             }
           }
-          // musicList 为空会报错
-          // console.log(this.musicList[preIndex].id)
-
-          return this.$store.commit('updateMusicId', this.musicList[preIndex].id)
+          // this.$store.commit('player/changeMusicId', this.musicList[preIndex].id)
+          this.$store.commit('player/changeCurrentMusicIndex', preIndex)
+          this.$store.commit('player/changeDuration', this.musicList[preIndex].dt)
+          // 这里 return 只能去修改 id
+          // 下面watch 已经监听了vuex 中 id 的改变并重新获取 url，
+          // 如果这里去重新获取url，会导致歌曲无法正确切换，因为vuex中的id并没发生改变，
+          // 为了使id 改变就必须 commit 修改id，
+          // 然后才去重新获取url， 但是这里修改了id 下面的watch就会获取最新的url，所以我们直接改变id
+          return this.$store.commit('player/changeMusicId', this.musicList[preIndex].id)
         // 下一首
         case 'next':
-          currentMusicIndex = this.currentMusicIndex
+          currentMusicIndex = this.$store.state.player.currentMusicIndex
           let nextIndex
           if (this.playType == 'order') {
             nextIndex = currentMusicIndex + 1 == this.musicList.length ? 0 : currentMusicIndex + 1
@@ -190,11 +165,10 @@ export default {
               }
             }
           }
-          // console.log(this.musicList[nextIndex].id)
-          // this.$store.commit("updateMusicId", this.musicList[nextIndex].id);
-          return this.$store.commit('updateMusicId', this.musicList[nextIndex].id)
-        case 'click':
-          return this.$store.commit('updateMusicId', id)
+          this.$store.commit('player/changeCurrentMusicIndex', nextIndex)
+          this.$store.commit('player/changeDuration', this.musicList[nextIndex].dt)
+
+          return this.$store.commit('player/changeMusicId', this.musicList[nextIndex].id)
         default:
           return null
       }
@@ -208,47 +182,64 @@ export default {
     },
     // 当前播放的时间
     timeupdate() {
-      // console.log(e);
-      // console.log(this.$refs.audioPlayer.currentTime);
-      // 节流
       let time = this.$refs.audioPlayer.currentTime
-      // console.log(time)
-      // 将当前播放时间保存到vuex  如果保存到vuex这步节流,会导致歌词不精准,误差最大有1s
-      // this.$store.commit('updateCurrentTime', time)
-      // console.log(time)
       time = Math.floor(time)
       // console.log(timer)
+      // lastSecond 默认 0
       if (time !== lastSecond) {
-        // console.log(time)
+        //   // console.log(time)
         lastSecond = time
-        this.currentTime = time
-        // console.log(this.currentTime)
-        // 计算进度条的位置
+        this.$store.commit('player/changeCurrentTime', time)
+        //   // 计算进度条的位置
+        durationNum = returnSecond(this.$store.state.player.duration)
+        // console.log(time, durationNum)
         this.timeProgress = Math.floor((time / durationNum) * 100)
-        this.$store.commit('updateCurrentTime', time)
-
-        // console.log((timer / durationNum) * 100);
       }
+
     },
     // 拖动进度条
     // 拖动进度条的回调
     changeProgress(e) {
       // 修改当前播放时间
-      this.currentTime = Math.floor((e / 100) * durationNum)
+      let time = Math.floor((e / 100) * durationNum)
+      this.$store.commit('player/changeCurrentTime', time)
+
       // 改变audio的实际当前播放时间
-      this.$refs.audioPlayer.currentTime = this.currentTime
+      this.$refs.audioPlayer.currentTime = time
     },
     clickRow() {
       // console.log('111')
     },
 
+    changeVolume(e) {
+      // 改变audio的音量
+      // input事件 实时触发
+      this.$refs.audioPlayer.volume = e / 100;
+      if (this.isMuted && e > 0) {
+        this.isMuted = false;
+      } else if (e == 0 && this.isMuted == false) {
+        this.isMuted = true;
+      }
+    },
+    // 点击小喇叭的回调 （切换静音状态）
+    changeMutedState() {
+      if (this.isMuted) {
+        this.volume = volumeSave;
+      } else {
+        volumeSave = this.volume;
+        this.volume = 0;
+      }
+      console.log(volumeSave, this.isMuted);
+      this.isMuted = !this.isMuted;
+    },
+
     // 点击播放键的回调
     changePlayState() {
-      !this.$store.state.isPlay ? this.playMusic() : this.pauseMusic()
+      !this.$store.state.player.isPlay ? this.playMusic() : this.pauseMusic()
     },
     // audio开始或暂停播放的回调  在vuex中改变状态
     changeState(state) {
-      this.$store.commit('changePlayState', state)
+      this.$store.commit('player/changeIsPlayer', state)
     },
     // 操作drawerList中DOM的函数， 添加当前正在播放歌曲高亮样式
     handleDrawerListDOM(currentIndex, lastIndex) {
@@ -282,39 +273,59 @@ export default {
       this.$refs.audioPlayer.pause()
     }
   },
+  computed: {
+    ...mapState('player', {
+      musicUrl: state => state.musicUrl
+    }),
+    ...mapState('player', {
+      musicListDetail: state => state.musicListDetail
+    }),
+    ...mapState('player', {
+      duration: state => state.duration
+    }),
+    ...mapState('player', {
+      musicDetail: state => state.musicDetail
+    }),
+    ...mapState('player', {
+      isPlay: state => state.isPlay
+    }),
+  },
   watch: {
     // 监听 vuex 中 musicId
-    '$store.state.musicId'(id) {
-      // console.log("vuex中的id发生了变化", id);
-      // 暂停播放的歌曲
+    '$store.state.player.musicId'(musicId) {
+      // 暂停播放
       this.pauseMusic()
-      // 重新获取URL
-      this.getMusicUrl(id)
-      // 获取歌单列表
-      this.musicList = this.$store.state.musicList
-      // 获取当前音乐详情
-      this.getMusicDetailFromMusicList()
-      //
-      durationNum = returnSecond(this.duration)
+      // 获取 url
+      this.$store.dispatch('player/getMusicUrl', musicId)
+      // 1.获取vuex数据
+
+      // 获取单曲详情
+      this.$store.dispatch('player/getMusicDetailFromMusicList', musicId)
+      this.currentMusicIndex = this.$store.state.player.currentMusicIndex
     },
-    // 监听 currentIndex 变化
-    '$store.state.currentIndex'(currentIndex, lastIndex) {
-      // currentIndex 当前 index
-      // lastIndex 之前的 index
+    // 监听 vuex 中 musicList
+    '$store.state.player.musicList'(musicList) {
+      // 获取vuex 中的musiclist数据
+      this.musicList = this.$store.state.player.musicList
+      // 从歌单详情中获取歌曲详情
+      this.$store.dispatch('player/getMusicDetailFromMusicList', this.$store.state.player.musicId)
     },
     // 监听播放状态
-    '$store.state.isPlay'(isPlay) {
+    '$store.state.player.isPlay'(isPlay) {
       if (isPlay) {
         this.playMusic()
       } else {
         this.pauseMusic()
       }
     },
+    //
+    '$store.state.player.currentTime'(currentTime) {
+      this.currentTime = currentTime
+    },
     // 监听currentIndex的变化
-    '$store.state.currentIndex'(currentIndex, lastIndex) {
-      this.musicList = this.$store.state.musicList
+    '$store.state.player.currentMusicIndex'(currentMusicIndex, lastIndex) {
       if (this.hasDrawerOpend) {
-        this.handleDrawerListDOM(currentIndex, lastIndex)
+        this.handleDrawerListDOM(currentMusicIndex, lastIndex)
       }
     }
   },

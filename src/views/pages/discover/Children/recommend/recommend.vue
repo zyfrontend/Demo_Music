@@ -12,6 +12,8 @@
 import Banner from '@/components/banner'
 import MusicCard from '@/components/music-card'
 import { mapState } from 'vuex'
+
+
 export default {
   components: {
     Banner,
@@ -31,6 +33,7 @@ export default {
   methods: {
     // 监听 musiccard中点击回传id
     clickMusicCardItem(id) {
+      this.$store.commit('player/changeMusicListId', id)
       this.$router.push({ name: 'musicListDetail', params: { id } })
     }
   },

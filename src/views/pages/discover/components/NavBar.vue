@@ -80,7 +80,7 @@ export default {
   color: black;
   font-weight: 600;
   padding-bottom: 5px;
-  border-bottom: 3px solid #ec4141;
+  border-bottom: 3px solid #8e44ad;
   transform: translateY(4px);
 }
 }

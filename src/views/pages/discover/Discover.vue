@@ -41,5 +41,9 @@ export default {
   padding: 0 auto;
   overflow: scroll;
   height: calc(100vh - 220px);
+  /* overflow: scroll; */
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 </style>

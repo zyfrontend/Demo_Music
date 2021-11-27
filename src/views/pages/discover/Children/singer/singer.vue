@@ -1,29 +1,30 @@
 <template>
   <div class="singer">
     <div class="singer-category">
-    <!-- 歌手分类选择 -->
-    <div class="selectors">
-      <div class="selectorItem">
-        <div class="title">语种：</div>
-        <category-menu class="secondNavBar" @clickSecondBarItem="areaItem" :menuData="languageSort"></category-menu>
-      </div>
-      <div class="selectorItem">
-        <div class="title">分类：</div>
-        <category-menu class="secondNavBar" @clickSecondBarItem="typeItem" :menuData="typeSort"></category-menu>
-      </div>
-      <div class="selectorItem">
-        <div class="title">筛选：</div>
-        <category-menu class="secondNavBar" @clickSecondBarItem="initialItem" :menuData="initialSort"></category-menu>
+      <!-- 歌手分类选择 -->
+      <div class="selectors">
+        <div class="selectorItem">
+          <div class="title">语种：</div>
+          <category-menu class="secondNavBar" @clickSecondBarItem="areaItem" :menuData="languageSort"></category-menu>
+        </div>
+        <div class="selectorItem">
+          <div class="title">分类：</div>
+          <category-menu class="secondNavBar" @clickSecondBarItem="typeItem" :menuData="typeSort"></category-menu>
+        </div>
+        <div class="selectorItem">
+          <div class="title">筛选：</div>
+          <category-menu class="secondNavBar" @clickSecondBarItem="initialItem" :menuData="initialSort"></category-menu>
+        </div>
       </div>
     </div>
-  </div>
     <div class="singer-card">
-      <music-card @clickMusicCardItem="clickMusicCardItem" v-for="item in singerList" :key="item.id" :itemData="item"></music-card>
+      <music-card @clickMusicCardItem="$warn()" v-for="item in singerList" :key="item.id" :itemData="item"></music-card>
     </div>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import MusicCard from '@/components/music-card/src/musicCard.vue'
 import CategoryMenu from '@/components/category-menu'
 import SingerCategory from './components/singer-category.vue'
@@ -35,7 +36,6 @@ export default {
   },
   data() {
     return {
-      
       languageSort: [
         { area: -1, name: '全部' },
         { area: 7, name: '华语' },
@@ -79,67 +79,41 @@ export default {
         { initial: 'y', name: 'Y' },
         { initial: 'z', name: 'Z' },
         { initial: 0, name: '#' }
-      ],
-      area: -1,
-      type: -1,
-      initial: -1,
-      // 当前所在页数
-      currentPage: 1,
-      singerList: [],
-      // 是否还有更多数据
-      isMore: false
+      ]
     }
   },
   methods: {
-    // 请求歌手列表
-    async getSingerList() {
-      let res = await this.$request('/artist/list', {
-        type: this.type,
-        area: this.area,
-        initial: this.initial,
-        offset: (this.currentPage - 1) * 30
-      })
-      // console.log(res)
-      this.singerList.push(...res.data.artists)
-      this.isMore = res.data.more
-    },
     // 事件处理
     // 地区
     areaItem(index) {
-      // console.log(this.languageSort[index].area);
-      this.area = this.languageSort[index].area;
+      this.$store.commit('discover/changeSingerArea', this.languageSort[index].area)
       // 先清空list 再请求数据
-      this.singerList = [];
-      this.currentPage = 1;
-      this.getSingerList();
+      this.$store.commit('discover/changeSingerList', [])
+      this.$store.commit('discover/changeSingerCurrentPage', 1)
+      this.$store.dispatch('discover/getSingerList')
     },
     // 分类
     typeItem(index) {
-      // console.log(this.typeSort[index].type);
-      this.type = this.typeSort[index].type;
+      this.$store.commit('discover/changeSingerType', this.typeSort[index].type)
       // 先清空list 再请求数据
-      this.currentPage = 1;
-      this.singerList = [];
-      this.getSingerList();
+      this.$store.commit('discover/changeSingerCurrentPage', 1)
+      this.$store.commit('discover/changeSingerList', [])
+      this.$store.dispatch('discover/getSingerList')
     },
     // 筛选
     initialItem(index) {
-      // console.log(this.initialSort[index].initial);
-      this.initial = this.initialSort[index].initial;
+      this.$store.commit('discover/changeSingerInitial', this.initialSort[index].initial)
       // 先清空list 再请求数据
-      this.currentPage = 1;
-      this.singerList = [];
-      this.getSingerList();
-    },
-    // 歌手item
-    clickMusicCardItem(){
-      console.log('111')
-      this.$warn()
+      this.$store.commit('discover/changeSingerCurrentPage', 1)
+      this.$store.commit('discover/changeSingerList', [])
+      this.$store.dispatch('discover/getSingerList')
     }
   },
+  computed: {
+    ...mapState('discover', { singerList: state => state.singerList })
+  },
   created() {
-    this.getSingerList()
-    // console.log(this.singerList)
+    this.$store.dispatch('discover/getSingerList')
   }
 }
 </script>
@@ -148,22 +122,21 @@ export default {
   .singer-card {
     display: flex;
     flex-wrap: wrap;
-    
   }
   .singer-category {
-  display: flex;
-  justify-content: center;
-  .selectorItem {
     display: flex;
+    justify-content: center;
+    .selectorItem {
+      display: flex;
+    }
+    .title {
+      font-size: 12px;
+      width: 40px;
+      line-height: 33px;
+    }
+    .secondNavBar {
+      width: calc(100% - 60px);
+    }
   }
-  .title {
-    font-size: 12px;
-    width: 40px;
-    line-height: 33px;
-  }
-  .secondNavBar {
-    width: calc(100% - 60px);
-  }
-}
 }
 </style>

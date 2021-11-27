@@ -9,7 +9,7 @@
       <el-container class="container-view">
         <!-- 侧边栏 -->
         <nav-menu></nav-menu>
-        <el-main>
+        <el-main class="test">
           <router-view></router-view>
         </el-main>
       </el-container>

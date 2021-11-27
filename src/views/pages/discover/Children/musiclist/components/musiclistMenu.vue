@@ -154,7 +154,7 @@ export default {
 
     .active {
       background-color: #fdf5f5;
-      color: #ec4747;
+      color: #8e44ad;
       border-radius: 11px;
     }
   }

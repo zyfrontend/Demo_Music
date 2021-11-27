@@ -38,69 +38,45 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import DetailHeader from './components/detail-header.vue'
 import { formatMinuteSecond } from '@/utils/formatDate.js'
 export default {
   data() {
     return {
+      // eltabs 默认显示
       activeName: 'musiclist',
-      musicListDetail: {},
-      comments: {},
-      
     }
   },
   components: {
     DetailHeader
   },
   methods: {
-    // 根据传来的 id 查询歌单
-    async getMusicListDetail() {
-      var timestamp = Date.parse(new Date())
-      // console.log(this.$route.params.id);
-      let result = await this.$request('/playlist/detail', {
-        id: this.$route.params.id,
-        timestamp
-      })
-      // console.log(result);
-      this.musicListDetail = result.data.playlist
-      // console.log(this.musicListDetail);
-      // 判断是否还有更多音乐
-      if (this.musicListDetail.tracks.length != this.musicListDetail.trackIds.length) {
-        this.isMore = true
-      }
-      // 处理播放时间
-      this.musicListDetail.tracks.forEach((item, index) => {
-        this.musicListDetail.tracks[index].dt = formatMinuteSecond(item.dt)
-      })
-      // 判断用户是否喜欢该音乐
-      // 直接两个循环性能损耗太厉害了 没什么思路暂时不做先
-      // let likeMusicList = this.$store.state.likeMusicList;
-    },
     // 双击table的row的回调
     async clickRow(row) {
       // console.log(row)
-      // 将musicId提交到vuex中 供bottomControl查询歌曲url和其它操作
-      this.$store.commit('updateMusicId', row.id)
+      // 将当前双击到的歌曲id提交到vuex中 供播放组件查询歌曲url和其它操作
+      this.$store.commit('player/changeMusicId', row.id)
       // 如果歌单发生变化,则提交歌单到vuex
-      if (this.musicListDetail.id != this.$store.state.musicListId) {
-        // 将歌单传到vuex
-        this.$store.commit('updateMusicList', {
-          // 列表
-          musicList: this.musicListDetail.tracks,
-          // 列表id
-          musicListId: this.musicListDetail.id
-        })
+      if (this.$route.params.id != this.$store.state.player.musicListId) {
+        // 将歌单id传到vuex
+        this.$store.commit('player/changeMusicListId', this.$route.params.id)
+        // 损耗性能 毕竟数据已经请求下来了
+        this.$store.dispatch('player/getMusicListDetail', this.$route.params.id)
       }
     },
 
     // 点击播放全部按钮的回调
     playAll() {
-      this.$store.commit('updateMusicId', this.musicListDetail.tracks[0].id)
-      this.$store.commit('updateMusicList', {
-        musicList: this.musicListDetail.tracks,
-        musicListId: this.musicListDetail.id
-      })
+      // 1.把歌单第一首歌id添加到vuex中
+      this.$store.commit('player/changeMusicId', this.$store.state.player.musicListDetail.tracks[0].id)
+      // 2.更新歌单中歌曲列表到vuex中
+      this.$store.commit('player/changeMusicListId', this.$route.params.id)
+      // 3.更新歌单id
+      // 损耗性能 毕竟数据已经请求下来了
+      this.$store.dispatch('player/getMusicListDetail', this.$route.params.id)
     },
+
     // 高亮当前播放
     handleDOM(current, last) {
       // console.log(current, last)
@@ -108,52 +84,42 @@ export default {
         let tableRows = document.querySelector('.musicdetail').querySelectorAll('.el-table__row')
         // console.log(tableRows)
         // 在musiclist 中查找当前正在播放的歌曲index
-        let index = this.musicListDetail.tracks.findIndex(
-          (item) => item.id == current
-        );
-        // console.log(index)
+        let index = this.$store.state.player.musicListDetail.tracks.findIndex(item => item.id == current)
         if (index != -1) {
           // 直接修改dom样式的颜色无效  可能是因为第三方组件的原故
           // 通过引入全局样式解决
           // 将正在播放的音乐前面的索引换成小喇叭
-          tableRows[index].children[0].querySelector(
-            ".cell"
-          ).innerHTML = `<div><i class="iconfont icon-yinliang"></i></div>`;
-          tableRows[index].children[0]
-            .querySelector(".iconfont")
-            .classList.add("currentRow");
-          tableRows[index].children[2]
-            .querySelector(".cell")
-            .classList.add("currentRow");
+          tableRows[index].children[0].querySelector('.cell').innerHTML = `<div><i class="iconfont icon-yinliang"></i></div>`
+          tableRows[index].children[0].querySelector('.iconfont').classList.add('currentRow')
+          tableRows[index].children[2].querySelector('.cell').classList.add('currentRow')
         }
 
         // 清除上一首的样式
         if (last != -1) {
-          let lastIndex = this.musicListDetail.tracks.findIndex(
-            (item) => item.id == last
-          );
+          let lastIndex = this.$store.state.player.musicListDetail.tracks.findIndex(item => item.id == last)
           if (lastIndex != -1) {
             // 将上一个播放的dom的小喇叭换回索引
-            tableRows[lastIndex].children[0].querySelector(
-              ".cell"
-            ).innerHTML = `<div>${
-              lastIndex + 1 < 10 ?  (lastIndex + 1) : lastIndex + 1
-            }</div>`;
+            tableRows[lastIndex].children[0].querySelector('.cell').innerHTML = `<div>${
+              lastIndex + 1 < 10 ? lastIndex + 1 : lastIndex + 1
+            }</div>`
 
             // 将上一首的类名删掉  小喇叭的html已经被替换了，不需要再还原
-            tableRows[lastIndex].children[2]
-              .querySelector(".cell")
-              .classList.remove("currentRow");
+            tableRows[lastIndex].children[2].querySelector('.cell').classList.remove('currentRow')
           }
         }
       }
     }
   },
-  async created() {
-    await this.getMusicListDetail()
+  computed: {
+    ...mapState('player', {
+      musicListDetail: state => state.musicListDetail
+    })
+  },
+  created() {
+    this.$store.dispatch('player/getMusicListDetail')
   },
   watch: {
-    '$store.state.musicId'(current, last) {
+    '$store.state.player.musicId'(current, last) {
       this.handleDOM(current, last)
     }
   }

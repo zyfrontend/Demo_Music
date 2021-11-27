@@ -6,7 +6,6 @@
       <div v-for="item in officialListDetail" :key="item.id">
         <list-table @handleTrClick="handleTrClick" :officialItem="item"></list-table>
       </div>
-
     </div>
     <div class="worldwide">
       <div class="title">全球榜</div>
@@ -20,83 +19,52 @@
 <script>
 import ListTable from '@/components/list-table'
 import MusicCard from '@/components/music-card/src/musicCard.vue'
-import { formatMinuteSecond } from '@/utils/formatDate.js'
-
+import { mapState } from 'vuex'
 export default {
   components: {
     ListTable,
     MusicCard
   },
   data() {
-    return {
-      // 歌单封面等信息
-      officialList: [],
-      // 歌单列表等信息
-      officialListDetail: [],
-      // 全球榜
-      globalList: [],
-      
-    }
+    return {}
   },
   methods: {
-    // 请求所有榜单
-    async getAllRankings() {
-      let res = await this.$request('/toplist')
-      // console.log(res.data.list)
-      this.officialList = res.data.list.slice(0, 4)
-      this.globalList = res.data.list.slice(4)
-    },
-
-    // 根据榜单id请求详细数据
-    // 根据传来的 id 查询歌单
-    async getMusicListDetail(id) {
-      // console.log(this.$route.params.id);
-      let result = await this.$request('/playlist/detail', { id })
-      // console.log(result)
-      result = result.data.playlist
-      // console.log(result)
-      // 对时间进行处理
-      result.tracks.forEach((item, index) => {
-        result.tracks[index].dt = formatMinuteSecond(item.dt)
-      })
-      this.officialListDetail.push(result)
-    },
     // 监听 musiccard中点击回传id
     clickMusicCardItem(id) {
       // console.log(id)
-      this.$router.push({ name: "musicListDetail", params: { id } });
+      this.$router.push({ name: 'musicListDetail', params: { id } })
     },
-    handleTrClick({id, index}){
+    //  顶部展示的几个播放业务
+    handleTrClick({ id, index }) {
       // console.log(id)
       // 查询歌单id
-      let musicListIndex = this.officialListDetail.findIndex(
-        (item) => item.id == id
-      );
+      let musicListIndex = this.$store.state.discover.officialListDetail.findIndex(item => item.id == id)
       // 获取对应歌单
       // console.log(this.officialListDetail[musicListIndex], index)
-      this.$store.commit(
-        "updateMusicId",
-        this.officialListDetail[musicListIndex].tracks[index].id
-      );
+      this.$store.commit('player/changeMusicId', this.$store.state.discover.officialListDetail[musicListIndex].tracks[index].id)
       // console.log(this.officialListDetail[musicListIndex])
       // 如果歌单发生变化,则提交歌单到vuex
-      if (id != this.$store.state.musicListId) {
+      if (id != this.$store.state.discover.musicListId) {
         // 将歌单传到vuex
-        this.$store.commit("updateMusicList", {
-          musicList: this.officialListDetail[musicListIndex].tracks,
-          musicListId: id,
-        });
+        this.$store.commit('player/changeMusicList', this.$store.state.discover.officialListDetail[musicListIndex].tracks)
+        this.$store.commit('player/changeMusicListId', id)
+        
       }
     }
   },
+  computed: {
+    ...mapState('discover', {
+      officialList: state => state.officialList
+    }),
+    ...mapState('discover', { globalList: state => state.globalList }),
+    ...mapState('discover', { officialListDetail: state => state.officialListDetail })
+  },
   async created() {
-    // 获取歌单信息
-    await this.getAllRankings()
-    // console.log(this.officialList)
-    // 根据id查询需要展示列表的歌单详情
-    this.officialList.forEach(item => {
-      this.getMusicListDetail(item.id)
-    })
+    // // 根据id查询需要展示列表的歌单详情
+    // this.officialList.forEach(item => {
+    //   this.getMusicListDetail(item.id)
+    // })
+    this.$store.dispatch('discover/getAllRankings')
   }
 }
 </script>

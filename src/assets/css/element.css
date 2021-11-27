@@ -3,7 +3,7 @@
     background-color: #f4f4f4!important;
 }
 .el-pagination.is-background .el-pager li:not(.disabled).active{
-    background-color: #ec4141!important;
+    background-color: #8e44ad!important;
     color: white!important;
 }
 
@@ -18,7 +18,7 @@
 }
 
 .el-tabs__active-bar {
-    background-color: #ec4141!important;
+    background-color: #8e44ad!important;
     bottom: 4px !important;
 }
 
@@ -137,7 +137,7 @@ tbody .el-table th, .el-table tr {
 }
 
 body .el-table .el-table__row .currentRow {
-    color: #ec4141 !important;
+    color: #8e44ad !important;
 }
 
 .el-drawer__wrapper {
@@ -210,7 +210,7 @@ tr .is-leaf:nth-child(7) {
 }
 
 .el-dialog__close:hover {
-    color: #ea4848 !important;
+    color: #8e44ad !important;
 }
 
 .el-tooltip__popper{

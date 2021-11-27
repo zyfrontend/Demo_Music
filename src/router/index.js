@@ -39,14 +39,17 @@ const routes = [
       },
       {
         path: '/video',
+        redirect: '/discover',
         component: () => import('@/views/pages/video/Video.vue')
       },
       {
         path: '/favorites',
+        redirect: '/discover',
         component: () => import('@/views/pages/collect/Collect.vue')
       },
       {
         path: '/recommendmusic',
+        redirect: '/discover',
         component: () => import('@/views/pages/daily/Daily.vue')
       },
       {
