@@ -1,19 +1,4 @@
-# vue_music
+# Vue_music
 
-## Project setup
-```
-yarn install
-```
+![](https://zyfullstack-images.oss-cn-shanghai.aliyuncs.com/img/202111272243101.png)
 
-### Compiles and hot-reloads for development
-```
-yarn serve
-```
-
-### Compiles and minifies for production
-```
-yarn build
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).

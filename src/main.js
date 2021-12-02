@@ -10,7 +10,8 @@ import 'element-ui/lib/theme-chalk/index.css'
 import '@/assets/css/reset.less'
 import './assets/css/reset.less'
 
-import { request } from './service/request'
+import { request } from '@/service/request'
+
 
 Vue.prototype.$request = request
 
