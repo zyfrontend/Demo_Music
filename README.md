@@ -1,4 +1,50 @@
-# Vue_music
+# Vue2+Element UI仿网易云应用
 
-![](https://zyfullstack-images.oss-cn-shanghai.aliyuncs.com/img/202111272243101.png)
+## 首页预览
+
+![](https://zyfullstack-images.oss-cn-shanghai.aliyuncs.com/img/202112052129647.png)
+
+## 实现功能
+
+- 首页
+  - 轮播图
+  - 热门歌单展示
+  - 歌单详情
+  - 单曲详情
+  - 音乐播放
+  - 播放列表
+  - 音乐切换
+  - 列表循环，随机播放
+  - 歌词滚动
+  - 评论展示
+  - 播放列表添加
+- 分类歌单列表
+  - 分类列表展示
+  - 分类切换
+  - 歌单展示
+  - 歌单详情
+  - 单曲详情
+  - 歌曲播放
+  - 播放列表添加
+- 排行榜
+  - 热门歌单单曲展示
+  - 歌曲播放
+  - 播放列表添加
+- 歌手分类
+  - 语种分类
+  - 男女歌手，乐队分类
+  - 按A-Z分类
+  - 歌手列表展示
+
+## 技术栈
+
+- Vue2`^2.6.11`
+- ElementUI`^2.15.6`
+- Less`^3.0.4`
+- Vuex`^3.4.0`
+- Vue-Router`^3.2.0`
+- Axios`^0.24.0`
+- normalize.css`^8.0.1`
+
+## 目录结构
 
