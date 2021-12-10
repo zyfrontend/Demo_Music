@@ -14,8 +14,8 @@ module.exports = {
   devServer: {
     proxy: {
       '/api': {
-        // target: 'https://www.codeman.store',
-        target: 'http://www.zyfullstack.top:3000/',
+        target: 'http://123.207.32.32:9001',
+        // target: 'http://www.zyfullstack.top:3000/',
         changeOrigin: true,
         ws: true,
         pathRewrite: {

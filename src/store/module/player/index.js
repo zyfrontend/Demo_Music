@@ -144,7 +144,7 @@ export default {
       if (index != -1) {
         commit('changeCurrentMusicIndex', index)
         commit('changeMusicDetail', state.musicList[index])
-        commit('changeDuration', state.musicList[index].dt)
+        commit('changeDuration', state.musicList[index].dt || state.musicList[index].duration)
       }
     },
 

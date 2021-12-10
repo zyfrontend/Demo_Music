@@ -1,7 +1,9 @@
 import axios from 'axios'
+import vuex from '../store/index'
 import { BASE_URL } from './config'
-
+// 该项目所有请求均为 get请求
 export function request(url, params) {
+  // 请求超过30秒则判定为超时
   const instance = axios.create({
     baseURL: BASE_URL,
     timeout: 30000,
@@ -13,15 +15,13 @@ export function request(url, params) {
   instance.interceptors.request.use(
     config => {
       // console.log('请求拦截器');
-      if (localStorage.getItem('token')) {
-        // config.headers.common['token'] = localStorage.getItem('token')
-      }
       return config
     },
     err => {
       console.log(err)
     }
   )
+
   // 响应拦截
   instance.interceptors.response.use(
     config => {
@@ -33,7 +33,7 @@ export function request(url, params) {
   )
 
   instance.defaults.withCredentials = true
-  // get请求
+
   if (params) {
     params = {
       params: params

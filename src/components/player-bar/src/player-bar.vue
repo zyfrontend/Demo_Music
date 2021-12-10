@@ -17,7 +17,7 @@
       </div>
       <div class="music-info" v-if="musicDetail && musicDetail.name">
         <div class="music-name">{{ musicDetail.name }}</div>
-        <div class="music-author">{{ musicDetail.ar[0].name }}</div>
+        <div class="music-author">{{ musicDetail.ar[0].name}}</div>
       </div>
     </div>
     <div class="bar-center">

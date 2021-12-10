@@ -11,7 +11,7 @@
           <td class="singer">{{ item.ar[0].name }}</td>
         </tr>
       </table>
-      <div class="checkAll" @click="$warn()">查看全部 <i class="iconfont icon-arrow-right-bold"></i></div>
+      <div class="checkAll" @click="clickMusicCardItem">查看全部 <i class="iconfont icon-arrow-right-bold"></i></div>
     </div>
   </div>
 </template>
@@ -33,6 +33,9 @@ export default {
     handleTrClick(id, index){
       
       this.$emit('handleTrClick', {id, index})
+    },
+    clickMusicCardItem(){
+       this.$emit('clickMusicCardItem', this.$props.officialItem.id)
     }
   },
   

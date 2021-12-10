@@ -1,18 +1,47 @@
 <template>
   <div class="Collect">
-      <h2>开发中</h2>
+    <music-card v-for="item in userMusicList" :key="item.id" :itemData="item" @clickMusicCardItem="clickMusicCardItem"></music-card>
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import MusicCard from '@/components/music-card'
 export default {
   data() {
-    return {
-
-    };
+    return {}
   },
-};
+  components: {
+    MusicCard
+  },
+  computed: {
+    ...mapState('collect', {
+      userMusicList: state => state.userMusicList
+    })
+  },
+  methods: {
+    // 监听 musiccard中点击回传id
+    clickMusicCardItem(id) {
+      this.$store.commit('player/changeMusicListId', id)
+      this.$router.push({ name: 'musicListDetail', params: { id } })
+    }
+  },
+  created() {
+    this.$store.dispatch('collect/getUserMusicList')
+  }
+}
 </script>
 <style lang="less" scoped>
-.Collect {}
+.Collect {
+  padding: 0 auto;
+  overflow: scroll;
+  height: calc(100vh - 155px);
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px 0;
+  /* overflow: scroll; */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 </style>

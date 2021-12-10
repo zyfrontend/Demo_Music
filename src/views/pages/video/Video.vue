@@ -14,5 +14,13 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-.Video {}
+.Video {
+  padding: 0 auto;
+  overflow: scroll;
+  height: calc(100vh - 120px);
+  /* overflow: scroll; */
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
 </style>

@@ -1,38 +1,38 @@
 import Vue from "vue"
 
 import {
-    Container,
-    Header,
-    Aside,
-    Main,
-    Switch,
-    Menu,
-    MenuItem,
-    MenuItemGroup,
-    Submenu,
-    Carousel,
-    CarouselItem,
-    Pagination,
-    Tabs,
-    TabPane,
-    Table,
-    TableColumn,
-    Slider,
-    Input,
-    Popover,
-    Button,
-    Form,
-    FormItem,
-    Message,
-    Drawer,
-    InfiniteScroll,
-    Dialog,
-    Link,
-    Tooltip,
-    Loading,
-    Row,
-    Col,
-} from "element-ui"
+  Container,
+  Header,
+  Aside,
+  Main,
+  Switch,
+  Menu,
+  MenuItem,
+  MenuItemGroup,
+  Submenu,
+  Carousel,
+  CarouselItem,
+  Pagination,
+  Tabs,
+  TabPane,
+  Table,
+  TableColumn,
+  Slider,
+  Input,
+  Popover,
+  Button,
+  Form,
+  FormItem,
+  Message,
+  Drawer,
+  InfiniteScroll,
+  Dialog,
+  Link,
+  Tooltip,
+  Loading,
+  Row,
+  Col
+} from 'element-ui'
 
 Vue.use(Container)
 Vue.use(Header)
@@ -64,5 +64,4 @@ Vue.use(Tooltip)
 Vue.use(Loading)
 Vue.use(Row)
 Vue.use(Col)
-
 Vue.prototype.$message = Message

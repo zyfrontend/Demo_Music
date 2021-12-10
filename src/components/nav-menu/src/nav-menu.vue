@@ -6,17 +6,21 @@
           <i class="iconfont icon-yinle"></i>
           <span slot="title">发现音乐</span>
         </el-menu-item>
-        <el-menu-item index="/video" @click="$warn()">
+        <!-- <el-menu-item index="/video" @click="$warn()">
           <i class="iconfont icon-shipin"></i>
           <span slot="title">视频</span>
         </el-menu-item>
         <el-menu-item index="/favorites" @click="$warn()">
           <i class="iconfont icon-more"></i>
           <span slot="title">收藏</span>
-        </el-menu-item>
-        <el-menu-item index="/recommendmusic" @click="$warn()"> 
+        </el-menu-item> -->
+        <el-menu-item index="/recommendmusic"> 
           <i class="iconfont icon-good"></i>
           <span slot="title">每日推荐</span>
+        </el-menu-item>
+        <el-menu-item index="/favorites">
+          <i class="iconfont icon-more"></i>
+          <span slot="title">我的歌单</span>
         </el-menu-item>
       </el-menu>
     </el-aside>

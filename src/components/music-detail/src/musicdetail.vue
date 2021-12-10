@@ -25,10 +25,10 @@
           <div class="title">
             <div class="musicName">{{ musicDetail.name }}</div>
             <div class="album" @click="goToDetailPage('album', musicDetail.al.id)">
-              {{ musicDetail.al.name }}
+              {{ musicDetail.al.name}}
             </div>
             <div class="singer" @click="goToDetailPage('singerDetail', musicDetail.ar[0].id)">
-              {{ musicDetail.ar[0].name }}
+              {{ musicDetail.ar[0].name}}
             </div>
           </div>
           <div class="musiclyric">
@@ -88,7 +88,7 @@ export default {
     '$store.state.player.isMusicDetailCardShow'(isMusicDetailCardShow) {
       this.isMusicDetailCardShow = isMusicDetailCardShow
       this.cleanCard = false
-      
+
       // 请求评论
       //  this.$store.dispatch('player/getMusicComment', this.$store.state.player.musicId)
     },
@@ -97,11 +97,8 @@ export default {
       // 当vuex中的歌曲id发生变化时,需要重新获取评论和歌词
       this.$store.commit('player/changeLyric', [[0, '正在加载歌词']])
       this.$store.dispatch('player/getLyric', musicId)
-       this.$store.dispatch('player/getMusicComment', this.$store.state.player.musicId)
-
+      this.$store.dispatch('player/getMusicComment', this.$store.state.player.musicId)
     }
-
-    
   }
 }
 </script>

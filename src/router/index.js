@@ -44,12 +44,12 @@ const routes = [
       },
       {
         path: '/favorites',
-        redirect: '/discover',
+        // redirect: '/discover',
         component: () => import('@/views/pages/collect/Collect.vue')
       },
       {
         path: '/recommendmusic',
-        redirect: '/discover',
+        // redirect: '/discover',
         component: () => import('@/views/pages/daily/Daily.vue')
       },
       {

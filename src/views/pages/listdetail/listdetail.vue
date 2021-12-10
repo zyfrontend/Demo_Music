@@ -84,7 +84,8 @@ export default {
         let tableRows = document.querySelector('.musicdetail').querySelectorAll('.el-table__row')
         // console.log(tableRows)
         // 在musiclist 中查找当前正在播放的歌曲index
-        let index = this.$store.state.player.musicListDetail.tracks.findIndex(item => item.id == current)
+        // let index = this.$store.state.player.musicListDetail.tracks.findIndex(item => item.id == current)
+        let index = this.$store.state.player.musicList.findIndex(item => item.id == current)
         if (index != -1) {
           // 直接修改dom样式的颜色无效  可能是因为第三方组件的原故
           // 通过引入全局样式解决
@@ -96,7 +97,7 @@ export default {
 
         // 清除上一首的样式
         if (last != -1) {
-          let lastIndex = this.$store.state.player.musicListDetail.tracks.findIndex(item => item.id == last)
+          let lastIndex = this.$store.state.player.musicList.findIndex(item => item.id == last)
           if (lastIndex != -1) {
             // 将上一个播放的dom的小喇叭换回索引
             tableRows[lastIndex].children[0].querySelector('.cell').innerHTML = `<div>${

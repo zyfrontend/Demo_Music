@@ -4,7 +4,7 @@
       <div class="title">官方榜</div>
       <!--  -->
       <div v-for="item in officialListDetail" :key="item.id">
-        <list-table @handleTrClick="handleTrClick" :officialItem="item"></list-table>
+        <list-table @clickMusicCardItem="clickMusicCardItem" @handleTrClick="handleTrClick" :officialItem="item"></list-table>
       </div>
     </div>
     <div class="worldwide">
