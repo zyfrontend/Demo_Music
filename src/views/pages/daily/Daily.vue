@@ -28,10 +28,11 @@ export default {
     }
   },
   created() {
-    if (!this.$store.state.token) {
+    if (this.$store.state.token) {
       this.$message.error("只有登录后才能进入每日推荐页面哦!");
       this.$router.replace("/discover");
     }
+    this.$store.dispatch('daily/getRecommendSongs')
   },
   watch: {
     '$store.state.daily.recommendSongs'(recommendSongs) {
