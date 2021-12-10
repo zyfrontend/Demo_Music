@@ -27,7 +27,13 @@ export default {
     }
   },
   created() {
+    if (!this.$store.state.token) {
+      this.$message.error("只有登录后才能进入用户歌单页面哦!");
+      this.$router.replace("/discover");
+    }
+
     this.$store.dispatch('collect/getUserMusicList')
+
   }
 }
 </script>

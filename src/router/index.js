@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from "vue-router"
-
+import vuex from '@/store'
 Vue.use(VueRouter)
 
 const routes = [
@@ -44,12 +44,12 @@ const routes = [
       },
       {
         path: '/favorites',
-        // redirect: '/discover',
+        name: 'Collect',
         component: () => import('@/views/pages/collect/Collect.vue')
       },
       {
         path: '/recommendmusic',
-        // redirect: '/discover',
+        name: 'Daily',
         component: () => import('@/views/pages/daily/Daily.vue')
       },
       {
@@ -66,5 +66,7 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
+
 
 export default router

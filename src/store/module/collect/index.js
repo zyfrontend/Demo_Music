@@ -14,10 +14,12 @@ export default {
   },
   actions: {
     async getUserMusicList({ commit }) {
-      const profile = JSON.parse(window.localStorage.getItem('profile'))
-      const userId = profile.userId
-      const result = await request(`/user/playlist?uid=${userId}`)
-      commit('changeUserMusicList', result.data.playlist)
+      if (JSON.parse(window.localStorage.getItem('profile'))) {
+        const profile = JSON.parse(window.localStorage.getItem('profile'))
+        const userId = profile.userId
+        const result = await request(`/user/playlist?uid=${userId}`)
+        commit('changeUserMusicList', result.data.playlist)
+      }
     }
   }
 }

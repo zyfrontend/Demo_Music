@@ -28,10 +28,9 @@ export default {
     }
   },
   created() {
-    if (window.localStorage.getItem('token') !== null) {
-      this.$store.dispatch('daily/getRecommendSongs')
-    } else {
-      this.$router.push('/')
+    if (!this.$store.state.token) {
+      this.$message.error("只有登录后才能进入每日推荐页面哦!");
+      this.$router.replace("/discover");
     }
   },
   watch: {

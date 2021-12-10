@@ -135,7 +135,6 @@ export default {
     // 获取热门歌单tag数据
     async getHotTag({ commit }) {
       let result = await request('/playlist/hot')
-      console.log(result)
       commit('changeHotTags', result.data.tags)
       commit('changeCurrentTag', result.data.tags[0])
     },
