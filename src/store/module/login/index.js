@@ -7,21 +7,22 @@ export default {
     return {
       token: '',
       cookie: '',
-      profile: {}
+      profile: {},
+      isLogin: false
     }
   },
   mutations: {
     changeToken(state, data) {
       state.token = data
-      window.localStorage.setItem('token', data)
     },
     changeCookie(state, data) {
       state.cookie = data
-      window.localStorage.setItem('cookie', data)
     },
     changeProfile(state, data) {
       state.profile = data
-      window.localStorage.setItem('profile', JSON.stringify(data))
+    },
+    changeIsLogin(state, data) {
+      state.isLogin = data
     }
   },
   actions: {
@@ -41,11 +42,15 @@ export default {
           message: '登录成功',
           type: 'success'
         })
-        console.log(result)
         const { token, cookie } = result.data
         commit('changeToken', token)
         commit('changeCookie', cookie)
         commit('changeProfile', result.data.profile)
+        commit('changeIsLogin', true)
+        window.localStorage.setItem('token', token)
+        window.localStorage.setItem('cookie', cookie)
+        window.localStorage.setItem('profile', JSON.stringify(result.data.profile))
+        window.localStorage.setItem('isLogin', true)
       } else if (code == 400) {
         Message({
           message: result.data.message,
@@ -68,17 +73,20 @@ export default {
       const token = window.localStorage.getItem('token')
       const cookie = window.localStorage.getItem('cookie')
       const profile = JSON.parse(window.localStorage.getItem('profile'))
+      const isLogin = window.localStorage.getItem(true)
 
       commit('changeToken', token)
       commit('changeCookie', cookie)
       commit('changeProfile', profile)
+      commit('changeIsLogin', isLogin)
     },
     // 退出登录
     async logout({ commit, dispatch }) {
-      await request('/logout')
-      const result_refresh = await request('/login/refresh')
-      const result_status = await request('/login/status')
       window.localStorage.clear()
+      await request('/logout')
+      await request('/login/refresh')
+      await request('/login/status')
+
       dispatch('recoverStore')
     }
   }

@@ -11,16 +11,19 @@
     <div class="right">
       <!-- <div class="login-btn" @click="dialogVisible = true" type="info">登录</div> -->
 
+      <!-- 按钮 -->
+      <!-- 点击触发显示登录狂 -->
 
-      <el-popover v-if="$store.state.login.profile" placement="bottom" trigger="click" content="退出登录">
+      <div v-if="!$store.state.login.isLogin" class="login-btn" @click="dialogVisible = true" type="info">登录</div>
+      <div v-else>
+        <el-popover placement="bottom" trigger="click" content="退出登录">
         <div class="user-info" slot="reference">
           <div class="user-img"><img :src="$store.state.login.profile.avatarUrl" alt="" /></div>
           <div class="nick-name">{{ $store.state.login.profile.nickname }}</div>
         </div>
         <el-button type="danger" size="mini" @click="logout">退出登录</el-button>
       </el-popover>
-      <div v-else class="login-btn" @click="dialogVisible = true" type="info">登录</div>
-
+      </div>
     </div>
     <div>
       <el-dialog :destroy-on-close="true" title="手机登录" :visible.sync="dialogVisible" width="30%" :before-close="handleLogin">
