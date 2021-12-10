@@ -50,7 +50,6 @@ export default {
         window.localStorage.setItem('token', token)
         window.localStorage.setItem('cookie', cookie)
         window.localStorage.setItem('profile', JSON.stringify(result.data.profile))
-        window.localStorage.setItem('isLogin', true)
       } else if (code == 400) {
         Message({
           message: result.data.message,
@@ -73,12 +72,14 @@ export default {
       const token = window.localStorage.getItem('token')
       const cookie = window.localStorage.getItem('cookie')
       const profile = JSON.parse(window.localStorage.getItem('profile'))
-      const isLogin = window.localStorage.getItem(true)
 
       commit('changeToken', token)
       commit('changeCookie', cookie)
       commit('changeProfile', profile)
-      commit('changeIsLogin', isLogin)
+      if (token) {
+        commit('changeIsLogin', true)
+      }
+      
     },
     // 退出登录
     async logout({ commit, dispatch }) {
