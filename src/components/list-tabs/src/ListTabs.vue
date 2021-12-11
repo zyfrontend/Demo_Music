@@ -25,8 +25,8 @@
               <i class="iconfont icon-download"></i>
             </el-table-column>
             <el-table-column prop="name" label="音乐标题" min-width="350"> </el-table-column>
-            <el-table-column prop="artists[0].name" label="歌手" min-width="120"> </el-table-column>
-            <el-table-column prop="album.name" label="专辑" min-width="170"> </el-table-column>
+            <el-table-column prop="ar[0].name" label="歌手" min-width="120"> </el-table-column>
+            <el-table-column prop="al.name" label="专辑" min-width="170"> </el-table-column>
             <el-table-column prop="dt" label="时长" min-width="100"> </el-table-column>
           </el-table>
         </el-tab-pane>
