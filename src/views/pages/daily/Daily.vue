@@ -15,28 +15,26 @@
 </template>
 
 <script>
-import Calendar from '@/components/Calendar'
-import ListTabs from '@/components/list-tabs'
+import Calendar from "@/components/Calendar";
+import ListTabs from "@/components/list-tabs";
 export default {
   components: {
     Calendar,
-    ListTabs
+    ListTabs,
   },
   data() {
     return {
-      recommendSongs: []
-    }
+      recommendSongs: [],
+    };
   },
-  async created() {
+  created() {
     // 刷新登录状态
-    await this.$store.dispatch('login/refreshLogin')
     // 验证是否登录
     if (!this.$store.state.login.isLogin) {
-      this.$message.error('只有登录后才能进入每日推荐页面哦!')
-      this.$router.replace('/discover')
-      return
+      this.$message.error("只有登录后才能进入每日推荐页面哦!");
+      this.$router.replace("/discover");
     } else {
-      this.$store.dispatch('daily/getRecommendSongs')
+      this.$store.dispatch("daily/getRecommendSongs");
     }
 
     // if (!this.$store.state.login.token) {
@@ -47,11 +45,11 @@ export default {
     // }
   },
   watch: {
-    '$store.state.daily.recommendSongs'(recommendSongs) {
-      this.recommendSongs = recommendSongs
-    }
-  }
-}
+    "$store.state.daily.recommendSongs"(recommendSongs) {
+      this.recommendSongs = recommendSongs;
+    },
+  },
+};
 </script>
 <style lang="less" scoped>
 .Daily {

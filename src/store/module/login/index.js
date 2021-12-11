@@ -46,7 +46,7 @@ export default {
         commit('changeToken', token)
         commit('changeCookie', cookie)
         commit('changeProfile', result.data.profile)
-        commit('changeIsLogin', true)
+				commit('changeIsLogin', true)
         window.localStorage.setItem('token', token)
         window.localStorage.setItem('cookie', cookie)
         window.localStorage.setItem('profile', JSON.stringify(result.data.profile))
@@ -83,19 +83,20 @@ export default {
     async logout({ commit, dispatch }) {
       window.localStorage.clear()
       await request('/logout')
-      dispatch('recoverStore')
+      await request('/login/refresh')
+      // dispatch('recoverStore')
     },
     // 刷新验证登录
     async refreshLogin({commit}){
         const result_refresh = await request('/login/refresh')
 
         const result_status = await request('/login/status')
+			console.log(result_status, result_refresh)
         // 1. 处于登录状态 返回data数据
         // 2. 未处于登录状态 返回 undefined
-        if (result_status == undefined && result_refresh == undefined) {
+        if (result_refresh == undefined) {
           console.log('未处于登录状态')
           commit('changeIsLogin', false)
-          return
         } else {
           console.log('处于登录状态')
           commit('changeIsLogin', true)
