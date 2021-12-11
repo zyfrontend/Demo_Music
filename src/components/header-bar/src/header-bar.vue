@@ -17,7 +17,7 @@
       <div v-if="!$store.state.login.isLogin" class="login-btn" @click="dialogVisible = true" type="info">登录</div>
       <div v-else>
         <el-popover placement="bottom" trigger="click" content="退出登录">
-        <div class="user-info" slot="reference">
+        <div class="user-info" slot="reference" >
           <div class="user-img"><img :src="$store.state.login.profile.avatarUrl" alt="" /></div>
           <div class="nick-name">{{ $store.state.login.profile.nickname }}</div>
         </div>
@@ -89,6 +89,7 @@ export default {
     },
     logout() {
       this.$store.dispatch('login/logout')
+      
     }
   }
 }

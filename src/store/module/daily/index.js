@@ -19,6 +19,7 @@ export default {
       const formatdata = result.data.data.dailySongs
       formatdata.forEach((item, index) => {
         formatdata[index].dt = formatMinuteSecond(item.duration)
+        formatdata[index].duration = formatMinuteSecond(item.duration)
         formatdata[index].al = item.album
         formatdata[index].ar = item.artists
       })

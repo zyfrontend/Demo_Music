@@ -1,5 +1,25 @@
 import axios from 'axios'
 import { BASE_URL } from './config'
+import { Loading } from 'element-ui'
+
+let loading
+function startLoading() {
+  //如果根实例设为变量VUE var VUE = new Vue({}) 也可写成下面的
+  // loading = VUE.$loading({
+  //   lock: true,
+  //   text: "拼命加载中...",
+  //   background: 'rgba(0,0,0,0.2)'
+  // })
+  loading = Loading.service({
+    lock: true,
+    text: '加载中...',
+    background: 'rgba(0,0,0,0.2)'
+  })
+}
+
+function endLoading() {
+  loading.close()
+}
 
 export function request(url, params) {
   const instance = axios.create({
@@ -16,6 +36,7 @@ export function request(url, params) {
       if (localStorage.getItem('token')) {
         // config.headers.common['token'] = localStorage.getItem('token')
       }
+      startLoading()
       return config
     },
     err => {
@@ -25,6 +46,7 @@ export function request(url, params) {
   // 响应拦截
   instance.interceptors.response.use(
     config => {
+      endLoading()
       return config
     },
     err => {

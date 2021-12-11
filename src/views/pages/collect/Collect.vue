@@ -26,12 +26,15 @@ export default {
       this.$router.push({ name: 'musicListDetail', params: { id } })
     }
   },
-  created() {
-    if (!this.$store.state.login.token) {
-      this.$message.error("只有登录后才能进入用户歌单页面哦!");
-      this.$router.replace("/discover");
+  async created() {
+    await this.$store.dispatch('login/refreshLogin')
+    // 验证是否登录
+    if (!this.$store.state.login.isLogin) {
+      this.$message.error('只有登录后才能进入每日推荐页面哦!')
+      this.$router.replace('/discover')
+      return
     } else {
-    this.$store.dispatch('collect/getUserMusicList')
+      this.$store.dispatch('collect/getUserMusicList')
     }
 
   }

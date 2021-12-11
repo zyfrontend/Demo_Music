@@ -5,7 +5,9 @@
 </template>
 <script>
 export default {
-  created(){
+  async created(){
+    await this.$store.dispatch('login/refreshLogin')
+
     if(window.localStorage.getItem('token')){
       this.$store.dispatch('login/recoverStore')
     }

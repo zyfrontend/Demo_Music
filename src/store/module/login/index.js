@@ -76,19 +76,30 @@ export default {
       commit('changeToken', token)
       commit('changeCookie', cookie)
       commit('changeProfile', profile)
-      if (token) {
-        commit('changeIsLogin', true)
-      }
+      
       
     },
     // 退出登录
     async logout({ commit, dispatch }) {
       window.localStorage.clear()
       await request('/logout')
-      await request('/login/refresh')
-      await request('/login/status')
-
       dispatch('recoverStore')
+    },
+    // 刷新验证登录
+    async refreshLogin({commit}){
+        const result_refresh = await request('/login/refresh')
+
+        const result_status = await request('/login/status')
+        // 1. 处于登录状态 返回data数据
+        // 2. 未处于登录状态 返回 undefined
+        if (result_status == undefined && result_refresh == undefined) {
+          console.log('未处于登录状态')
+          commit('changeIsLogin', false)
+          return
+        } else {
+          console.log('处于登录状态')
+          commit('changeIsLogin', true)
+        }
     }
   }
 }
