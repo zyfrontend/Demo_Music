@@ -36,7 +36,7 @@ export default {
         timestamp
       })
 
-      const { code } = result.data
+      const { code } = (result && result.data) || ''
       if (code == 200) {
         Message({
           message: '登录成功',
@@ -91,7 +91,7 @@ export default {
         const result_refresh = await request('/login/refresh')
 
         const result_status = await request('/login/status')
-			console.log(result_status, result_refresh)
+			// console.log(result_status, result_refresh)
         // 1. 处于登录状态 返回data数据
         // 2. 未处于登录状态 返回 undefined
         if (result_refresh == undefined) {

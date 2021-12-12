@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from "vue-router"
-import vuex from '@/store'
 Vue.use(VueRouter)
 
 const routes = [
@@ -50,7 +49,7 @@ const routes = [
       {
         path: '/recommendmusic',
         name: 'Daily',
-        component: () => import('@/views/pages/daily/Daily.vue')
+        component: () => import('@/views/pages/daily/Daily_test.vue')
       },
       {
         path: '/musiclistdetail/:id',
