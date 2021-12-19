@@ -98,7 +98,8 @@ export default {
      async refreshLogin({commit, dispatch}){
        await request('/login/refresh')
        const result = await request('/login/status')
-       if(result.data.profile.userId){
+       const {userId} = result.data.profile
+       if(userId){
          dispatch('recoverStore')
          commit('changeIsLogin', true)
        }
