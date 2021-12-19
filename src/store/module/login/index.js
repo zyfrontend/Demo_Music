@@ -26,7 +26,7 @@ export default {
     }
   },
   actions: {
-    async loginByCellphone({ commit }, account) {
+    async loginByCellphone({ commit, dispatch }, account) {
       const { phone, password } = account
       let timestamp = Date.parse(new Date())
       let result = await request('/login/cellphone', {
@@ -42,6 +42,10 @@ export default {
           message: '登录成功',
           type: 'success'
         })
+
+        // 获取用户信息
+
+
         const { token, cookie } = result.data
         commit('changeToken', token)
         commit('changeCookie', cookie)
@@ -55,7 +59,7 @@ export default {
           message: result.data.message,
           type: 'error'
         })
-      } else if (code == 502) {
+      } else if (code === 502) {
         Message({
           message: result.data.message,
           type: 'error'
@@ -66,6 +70,11 @@ export default {
           type: 'error'
         })
       }
+    },
+    // 获取用户信息
+    async getUserInfo({commit}){
+      const result = await request('/user/account')
+      console.log(result)
     },
     // 恢复数据
     recoverStore({ commit }) {
@@ -86,17 +95,13 @@ export default {
       commit('changeIsLogin', false)
     },
     // 刷新验证登录
-     async refreshLogin({commit, state}){
+     async refreshLogin({commit, dispatch}){
        await request('/login/refresh')
        const result = await request('/login/status')
-     },
-    // 获取登录状态
-    // 验证是否登录
-    async getLoginState({commit, state}){
-      await request('/login/refresh')
-      const result = await request('/login/status')
-
-
-    }
+       if(result.data.profile.userId){
+         dispatch('recoverStore')
+         commit('changeIsLogin', true)
+       }
+     }
   }
 }

@@ -7,10 +7,6 @@
 export default {
     async created(){
       await this.$store.dispatch('login/refreshLogin')
-
-     if(this.$store.state.login.isLogin){
-        await this.$store.dispatch('login/recoverStore')
-     }
    }
 }
 </script>
