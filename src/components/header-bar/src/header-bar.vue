@@ -47,8 +47,8 @@ export default {
   data() {
     return {
       account: {
-        phone: '18814351869',
-        password: 'zzy0226zzy233'
+        phone: '',
+        password: ''
       },
       dialogVisible: false,
       rules: {
