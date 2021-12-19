@@ -97,8 +97,6 @@ export default {
     // 刷新验证登录
      async refreshLogin({commit, dispatch}){
        await request('/login/refresh')
-       dispatch('recoverStore')
-       commit('changeIsLogin', true)
        const result = await request('/login/status')
        const {userId} = result.data.profile
        console.log(result);
