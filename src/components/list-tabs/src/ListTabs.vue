@@ -5,6 +5,7 @@
         <el-tab-pane label="歌曲列表" name="musiclist">
           <el-table
             @row-dblclick="clickRow"
+            v-if="musicData"
             :data="musicData"
             size="mini"
             style="width: 100%"
