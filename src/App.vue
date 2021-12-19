@@ -5,8 +5,8 @@
 </template>
 <script>
 export default {
-    async created(){
-      await this.$store.dispatch('login/refreshLogin')
+    created(){
+      this.$store.dispatch('login/refreshLogin')
    }
 }
 </script>

@@ -98,7 +98,7 @@ export default {
      async refreshLogin({commit, dispatch}){
        await request('/login/refresh')
        const result = await request('/login/status')
-       const {userId} = result.data.profile
+       const {userId} = result.data ? result.data.profile : result.data.profile
        console.log(result);
        console.log(userId);
        if(userId){
