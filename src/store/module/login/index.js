@@ -99,6 +99,8 @@ export default {
        await request('/login/refresh')
        const result = await request('/login/status')
        const {userId} = result.data.profile
+       console.log(result);
+       console.log(userId);
        if(userId){
          dispatch('recoverStore')
          commit('changeIsLogin', true)
