@@ -1,48 +1,63 @@
 <template>
   <div class="Collect">
     <music-card
-      v-for="item in userMusicList"
-      :key="item.id"
-      :itemData="item"
-      @clickMusicCardItem="clickMusicCardItem"
+        v-for="item in UserPlayList"
+        :key="item.id"
+        :itemData="item"
+        @clickMusicCardItem="clickMusicCardItem"
     ></music-card>
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
+import {mapState} from "vuex";
 import MusicCard from "@/components/music-card";
 export default {
-  data() {
-    return {};
-  },
+  name: "Collect",
   components: {
-    MusicCard,
+    MusicCard
   },
-  computed: {
-    ...mapState("collect", {
-      userMusicList: (state) => state.userMusicList,
-    }),
+  computed:{
+    ...mapState('collect', {
+      UserPlayList: state=> state.UserPlayList
+    })
   },
-  methods: {
+  methods:{
     // 监听 musiccard中点击回传id
     clickMusicCardItem(id) {
       this.$store.commit("player/changeMusicListId", id);
       this.$router.push({ name: "musicListDetail", params: { id } });
     },
   },
-  created() {
-    // 验证是否登录
-    if (!this.$store.state.login.isLogin) {
-      this.$message.error("只有登录后才能进入每日推荐页面哦!");
-      this.$router.replace("/discover");
-      return;
-    } else {
-      this.$store.dispatch("collect/getUserMusicList");
+  created(){
+    // this.$store.dispatch('login/getLoginState')
+    if(!this.$store.state.login.isLogin){
+      this.$message.error("只有登录后才能进入个人歌单页面哦!")
+      this.$router.push('/')
+    }else{
+    //  获取个人歌单
+      this.$store.dispatch('collect/getUserMusicList')
     }
   },
-};
+  watch:{
+    /*
+    * 监听 store 中 isLogin
+    * !isLogin = false 不做操作
+    *          = true 重定向
+    * */
+    '$store.state.login.isLogin':{
+      handler: function (isLogin){
+        if(!isLogin) {
+          this.$message.error("只有登录后才能进入个人歌单页面哦!")
+          this.$router.push('/')
+        }
+      },
+    }
+  }
+
+}
 </script>
+
 <style lang="less" scoped>
 .Collect {
   padding: 0 auto;

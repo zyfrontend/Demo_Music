@@ -1,7 +1,7 @@
 import axios from 'axios'
 import { BASE_URL } from './config'
 import { Loading } from 'element-ui'
-
+import Vuex from "vuex";
 let loading
 function startLoading() {
   //如果根实例设为变量VUE var VUE = new Vue({}) 也可写成下面的
@@ -33,9 +33,9 @@ export function request(url, params) {
   instance.interceptors.request.use(
     config => {
       // console.log('请求拦截器');
-      if (localStorage.getItem('token')) {
-        // config.headers.common['token'] = localStorage.getItem('token')
+      if(window.localStorage.getItem('cookie')){
       }
+
       startLoading()
       return config
     },

@@ -10,47 +10,63 @@
       </div>
       <span class="play-all"> 播放全部 </span>
     </div>
-    <list-tabs :musicData="recommendSongs"></list-tabs>
+    <list-tabs :musicData="dailyList"></list-tabs>
   </div>
 </template>
 
 <script>
-import Calendar from "@/components/Calendar";
 import ListTabs from "@/components/list-tabs";
+import Calendar from "@/components/Calendar";
+import {mapState} from "vuex/dist/vuex.esm.browser";
 export default {
-  components: {
-    Calendar,
+  name: "Daily",
+  components:{
     ListTabs,
+    Calendar
   },
-  data() {
+  data(){
     return {
-      recommendSongs: [],
-    };
-  },
-  created() {
-    // 刷新登录状态
-    // 验证是否登录
-    if (!this.$store.state.login.isLogin) {
-      this.$message.error("只有登录后才能进入每日推荐页面哦!");
-      this.$router.replace("/discover");
-    } else {
-      this.$store.dispatch("daily/getRecommendSongs");
+      // dailyList: []
     }
-
-    // if (!this.$store.state.login.token) {
-    //   this.$message.error("只有登录后才能进入每日推荐页面哦!");
-    //   this.$router.replace("/discover");
-    // }else{
-    // this.$store.dispatch('daily/getRecommendSongs')
-    // }
   },
-  watch: {
-    "$store.state.daily.recommendSongs"(recommendSongs) {
-      this.recommendSongs = recommendSongs;
+  computed:{
+    ...mapState('daily', {
+      dailyList: state=> state.dailyList
+    })
+  },
+  created(){
+    // this.$store.dispatch('login/getLoginState')
+    if(!this.$store.state.login.isLogin){
+      this.$message.error("只有登录后才能进入每日推荐页面哦!")
+      this.$router.push('/')
+    }else{
+      // 获取每日推荐数据
+      this.$store.dispatch('daily/getDailyRecommendList')
+    }
+  },
+  watch:{
+    /*
+    * 监听 store 中 isLogin
+    * !isLogin = false 不做操作
+    *          = true 重定向
+    * */
+    '$store.state.login.isLogin':{
+      handler: function (isLogin){
+         if(!isLogin) {
+            this.$message.error("只有登录后才能进入每日推荐页面哦!")
+            this.$router.push('/')
+         }
+      }
     },
-  },
-};
+    // '$store.state.daily.dailyList'(dailyList){
+    //     this.dailyList = dailyList
+    // }
+  }
+
+
+}
 </script>
+
 <style lang="less" scoped>
 .Daily {
   padding: 20px;

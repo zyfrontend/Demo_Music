@@ -49,7 +49,7 @@ const routes = [
       {
         path: '/recommendmusic',
         name: 'Daily',
-        component: () => import('@/views/pages/daily/Daily_test.vue')
+        component: () => import('@/views/pages/daily/Daily.vue')
       },
       {
         path: '/musiclistdetail/:id',

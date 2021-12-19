@@ -21,7 +21,7 @@ export default {
     changeProfile(state, data) {
       state.profile = data
     },
-    changeIsLogin(state, data) {
+    changeIsLogin(state, data=false) {
       state.isLogin = data
     }
   },
@@ -37,7 +37,7 @@ export default {
       })
 
       const { code } = (result && result.data) || ''
-      if (code == 200) {
+      if (code === 200) {
         Message({
           message: '登录成功',
           type: 'success'
@@ -46,11 +46,11 @@ export default {
         commit('changeToken', token)
         commit('changeCookie', cookie)
         commit('changeProfile', result.data.profile)
-				commit('changeIsLogin', true)
+		commit('changeIsLogin', true)
         window.localStorage.setItem('token', token)
         window.localStorage.setItem('cookie', cookie)
         window.localStorage.setItem('profile', JSON.stringify(result.data.profile))
-      } else if (code == 400) {
+      } else if (code === 400) {
         Message({
           message: result.data.message,
           type: 'error'
@@ -80,27 +80,23 @@ export default {
       
     },
     // 退出登录
-    async logout({ commit, dispatch }) {
+    async logout({ commit }) {
       window.localStorage.clear()
       await request('/logout')
-      await request('/login/refresh')
-      // dispatch('recoverStore')
+      commit('changeIsLogin', false)
     },
     // 刷新验证登录
-    async refreshLogin({commit}){
-        const result_refresh = await request('/login/refresh')
+     async refreshLogin({commit, state}){
+       await request('/login/refresh')
+       const result = await request('/login/status')
+     },
+    // 获取登录状态
+    // 验证是否登录
+    async getLoginState({commit, state}){
+      await request('/login/refresh')
+      const result = await request('/login/status')
 
-        const result_status = await request('/login/status')
-			// console.log(result_status, result_refresh)
-        // 1. 处于登录状态 返回data数据
-        // 2. 未处于登录状态 返回 undefined
-        if (result_refresh == undefined) {
-          console.log('未处于登录状态')
-          commit('changeIsLogin', false)
-        } else {
-          console.log('处于登录状态')
-          commit('changeIsLogin', true)
-        }
+
     }
   }
 }

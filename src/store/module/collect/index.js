@@ -1,25 +1,25 @@
-import { request } from '@/service/request'
+import {request} from '@/service/request'
 
 export default {
-  namespaced: true,
-  state() {
-    return {
-      userMusicList: []
+    namespaced: true,
+    state(){
+        return{
+            UserPlayList: []
+        }
+    },
+    mutations: {
+        changeUserPlayList(state, data){
+            state.UserPlayList = data
+        }
+    },
+    actions: {
+    // 获取个人歌单
+       async getUserMusicList({commit, rootState }){
+           const uId = rootState.login.profile.userId
+           const result = await request(`/user/playlist?uid=${uId}`)
+           if(result&& result.data){
+               commit('changeUserPlayList', result.data.playlist)
+           }
+       }
     }
-  },
-  mutations: {
-    changeUserMusicList(state, data) {
-      state.userMusicList = data
-    }
-  },
-  actions: {
-    async getUserMusicList({ commit }) {
-      if (JSON.parse(window.localStorage.getItem('profile'))) {
-        const profile = JSON.parse(window.localStorage.getItem('profile'))
-        const userId = profile.userId
-        const result = await request(`/user/playlist?uid=${userId}`)
-        commit('changeUserMusicList', result.data.playlist)
-      }
-    }
-  }
 }
