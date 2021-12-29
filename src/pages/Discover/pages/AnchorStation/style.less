@@ -1,0 +1,90 @@
+.anchorstation {
+	width: 980px;
+	margin: 0 auto;
+	box-sizing: border-box;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	.radio_name {
+						font-size: 10px;
+						color: #ccc;
+					}
+	.programme {
+		display: flex;
+		.menu_body {
+			border-left: 1px solid #ccc;
+			border-right: 1px solid #ccc;
+			margin: 0 10px;
+		}
+		.recommend_menu {
+			flex: 1;
+			.program_item {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				padding: 10px 20px;
+				&:nth-child(even){
+					background-color: #ecf0f1;
+				}
+				.item_channels {
+					border: 1px solid #ccc;
+					padding: 0 2px;
+				}
+				.program_info {
+					margin: 0 20px;
+					.program_name {
+						width: 280px;
+						overflow:hidden; 
+						text-overflow:ellipsis; 
+						white-space:nowrap;
+						font-size: 10px;
+					}
+				}
+			}
+		}
+		.toplist_menu {
+			flex: 1;
+			.top_list_item {
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				padding: 10px 10px;
+				&:nth-child(even){
+					background-color: #ecf0f1;
+				}
+				.item_rank {
+					display: flex;
+					span {
+						display: block;
+						width: 40px;
+						height: 40px;
+						text-align: center;
+						line-height: 40px;
+					}
+				}
+				.top_list_info {
+					margin: 0 20px;
+					.info_name {
+					width: 220px;
+					overflow:hidden; 
+					text-overflow:ellipsis; 
+					white-space:nowrap;
+					}
+					
+				}
+			}
+		}
+	}
+	.recommend_music {
+		display: flex;
+		flex-wrap: wrap;
+		padding: 20px 20px;
+		justify-content: space-between;
+		.recommend_music_item {
+			display: flex;
+			width: 400px;
+			margin: 10px 2px;
+			padding: 10px 0;
+			border-bottom: 2px #ccc solid;
+		}
+	}
+}
